@@ -9,4 +9,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\css\" />
+    <Folder Include="wwwroot\lib\js\" />
+  </ItemGroup>
+
 </Project>
