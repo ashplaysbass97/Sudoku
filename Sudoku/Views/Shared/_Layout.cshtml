@@ -17,34 +17,46 @@
     </environment>
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar sticky-top navbar-light bg-light justify-content-between">
         <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Sudoku</a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                </ul>
-            </div>
+            <a class="navbar-brand">Sudoku</a>
+            <form class="form-inline" id="newSudoku">
+                <div class="form-group">
+                    <select name="difficulty" class="form-control" id="difficulty">
+                        <option>Easy</option>
+                        <option>Medium</option>
+                        <option>Hard</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select name="size" class="form-control" id="size">
+                        <option>Shi Doku</option>
+                        <option>Roku Doku</option>
+                        <option>Sudoku</option>
+                        <option>Maxi</option>
+                        <option>Sudoku the Giant</option>
+                        <option>Sudoku-zilla</option>
+                        <option>Custom</option>
+                    </select>
+                </div>
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="mode" id="generate" checked>Generate
+                    </label>
+                    <label class="btn btn-outline-primary active">
+                        <input type="radio" name="mode" id="solve">Solve
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-success">New Sudoku</button>
+            </form>
         </div>
     </nav>
 
-    <partial name="_CookieConsentPartial" />
-
-    <div class="container body-content">
+    <div class="container">
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2020 - Sudoku</p>
+            <p>&copy; 2020 - Ashley Rushworth</p>
         </footer>
     </div>
 
