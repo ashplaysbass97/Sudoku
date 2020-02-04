@@ -22,29 +22,31 @@
             <a class="navbar-brand">Sudoku</a>
             <form class="form-inline" id="newSudoku">
                 <div class="form-group">
-                    <select name="difficulty" class="form-control" id="difficulty">
+                    <select name="difficulty" class="form-control" id="difficulty" required>
+                        <option value="" hidden>Difficulty</option>
                         <option>Easy</option>
                         <option>Medium</option>
                         <option>Hard</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <select name="size" class="form-control" id="size">
-                        <option>Shi Doku</option>
-                        <option>Roku Doku</option>
-                        <option>Sudoku</option>
-                        <option>Maxi</option>
-                        <option>Sudoku the Giant</option>
-                        <option>Sudoku-zilla</option>
+                    <select name="size" class="form-control" id="size" required>
+                        <option value="" hidden>Size</option>
+                        <option value="4,4" title="Four 2x2 regions">Shi Doku</option>
+                        <option value="6,6" title="Six 2x3 regions">Roku Doku</option>
+                        <option value="9,9" title="Classic 9x9 grid">Sudoku</option>
+                        <option value="12,12" title="Twelve 3x4 regions">Maxi</option>
+                        <option value="25,25" title="Twenty-five 5×5 regions">Sudoku the Giant</option>
+                        <option value="100,100" title="One hundred 10×10 regions">Sudoku-zilla</option>
                         <option>Custom</option>
                     </select>
                 </div>
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     <label class="btn btn-outline-primary">
-                        <input type="radio" name="mode" id="generate" checked>Generate
+                        <input type="radio" name="mode" value="generate" checked>Generate
                     </label>
                     <label class="btn btn-outline-primary active">
-                        <input type="radio" name="mode" id="solve">Solve
+                        <input type="radio" name="mode" value="solve">Solve
                     </label>
                 </div>
                 <button type="submit" class="btn btn-success">New Sudoku</button>

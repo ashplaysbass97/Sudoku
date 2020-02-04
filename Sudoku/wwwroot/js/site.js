@@ -1,4 +1,16 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿$(function () {
+    // Enable or disable the difficulty select depending on the selected mode
+    $("input[name='mode']").click(function () {
+        var modeValue = $("input[name='mode']:checked").val();
+        $("#difficulty").prop("disabled", modeValue === "solve" ? true : false);
+    });
 
-// Write your JavaScript code.
+    // New Sudoku button event listener
+    $("#newSudoku").submit(function (e) {
+        e.preventDefault();
+        var data = $("#newSudoku :input").serializeArray();
+        console.log(data);
+    });
+});
+
+
