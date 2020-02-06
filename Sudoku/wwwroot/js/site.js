@@ -11,18 +11,23 @@
     $("#newSudoku").submit(function (e) {
         e.preventDefault();
         var size = $("#size").val().split("x");
-        
+
         $.ajax({
             url: "/Home/NewSudoku",
             type: "POST",
-            data: { mode: modeValue },
+            data: {
+                difficulty: $("#difficulty").val(),
+                width: size[0],
+                height: size[1],
+                mode: modeValue
+            },
             success: function (result) {
-                alert(result);
+                $('#grid').html(result);
             },
             error: function () {
                 alert("error");
             }
-            });
+        });
     });
 });
 

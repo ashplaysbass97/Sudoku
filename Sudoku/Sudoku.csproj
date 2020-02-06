@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
     <Folder Include="wwwroot\lib\css\" />
     <Folder Include="wwwroot\lib\js\" />
   </ItemGroup>

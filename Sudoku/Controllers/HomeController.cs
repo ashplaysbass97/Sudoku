@@ -1,26 +1,26 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
+using Sudoku.Models;
+using Sudoku.ServiceLayer;
 
 namespace Sudoku.Controllers
 {
     public class HomeController : Controller
     {
+        private ISudokuService sudokuService = new SudokuService();
+
         public IActionResult Index()
         {
             return View();
         }
 
-        public string NewSudoku(string mode)
+        public IActionResult NewSudoku(string difficulty, int width, int height, string mode)
         {
-            if (mode == "generate")
-            {
-                return "generate";
-            }
-            else
-            {
-                return "solve";
-            }
-            
+
+
+            Grid grid = new Grid() { Cells = sudokuService.SetupGrid() };
+            return PartialView("_Grid", grid);
+
         }
     }
 }
