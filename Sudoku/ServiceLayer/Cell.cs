@@ -5,10 +5,6 @@ namespace Sudoku.ServiceLayer
     public class Cell
     {
         public Point Coordinates { get; set; }
-
-        public Cell()
-        {
-
-        }
+        public Region Region { get; set; }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Sudoku.Models;
 using Sudoku.ServiceLayer;
 
@@ -7,21 +6,17 @@ namespace Sudoku.Controllers
 {
     public class HomeController : Controller
     {
-        private ISudokuService sudokuService = new SudokuService();
+        private readonly ISudokuService _sudokuService = new SudokuService();
 
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult NewSudoku(string difficulty, int width, int height, string mode)
+        public IActionResult NewSudoku(string difficulty, int size, string mode)
         {
-
-
-            Grid grid = new Grid() { Cells = sudokuService.SetupGrid() };
+            var grid = new Grid(size, _sudokuService.CalculateGridDimensions(size), _sudokuService.SetupGrid(size));
             return PartialView("_Grid", grid);
-
         }
     }
 }
-
