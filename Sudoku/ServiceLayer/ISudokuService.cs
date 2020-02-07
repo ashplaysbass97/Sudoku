@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using Sudoku.Models;
 
 namespace Sudoku.ServiceLayer
 {
     internal interface ISudokuService
     {
-        int[] CalculateGridDimensions(int size);
-        List<Cell> SetupGrid(int size);
+        Grid SetupGrid(int size);
     }
 }
