@@ -5,19 +5,15 @@ namespace Sudoku.Models
 {
     public class Grid
     {
-        public Grid(int size, int[] dimensions, List<Cell> cells)
+        public int Size { get; set; }
+        public List<Region> Regions { get; set; }
+        public List<Cell> Cells { get; set; }
+
+        public Grid(List<Region> regions, List<Cell> cells)
         {
-            Size = size;
-            Width = dimensions[0];
-            Height = dimensions[1];
-            Regions = new List<Cell>();
+            Size = regions.Count;
+            Regions = regions;
             Cells = cells;
         }
-
-        public int Size { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public List<Cell> Regions { get; set; }
-        public List<Cell> Cells { get; set; }
     }
 }

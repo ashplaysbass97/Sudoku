@@ -9,20 +9,38 @@ namespace Sudoku.ServiceLayer
     {
         public Grid SetupGrid(int size)
         {
-            
+            int[] dimensions = CalculateGridDimensions(size);
+
+            List<Region> regions = new List<Region>();
             List<Cell> cells = new List<Cell>();
-            for (var x = 0; x < size; x++)
+            for (int regionX = 0; regionX < dimensions[0]; regionX++)
             {
-                for (var y = 0; y < size; y++)
+                for (int regionY = 0; regionY < dimensions[1]; regionY++)
                 {
-                    Cell cell = new Cell
+                    Region region = new Region
                     {
-                        Coordinates = new Point(x, y)
+                        Coordinates = new Point(regionX, regionY)
                     };
-                    cells.Add(cell);
+                    regions.Add(region);
+
+                    for (int cellX = 0; cellX < dimensions[1]; cellX++)
+                    {
+                        for (int cellY = 0; cellY < dimensions[0]; cellY++)
+                        {
+                            Cell cell = new Cell
+                            {
+                                Coordinates = new Point(regionX * dimensions[1] + cellX, regionY * dimensions[0] + cellY)
+                            };
+                            cells.Add(cell);
+
+                            cell.Region = region;
+                            region.Cells.Add(cell);
+                        }
+                    }
                 }
             }
-            Grid grid = new Grid(size, CalculateGridDimensions(size), cells);
+
+            Grid grid = new Grid(regions, cells);
             return grid;
         }
 
