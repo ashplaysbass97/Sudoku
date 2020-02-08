@@ -1,4 +1,6 @@
-﻿#newSudoku > div { padding-right: 1rem; }
+﻿.form-group, .btn-group {
+    padding-right: 1rem;
+}
 
 #grid {
     padding: 0;

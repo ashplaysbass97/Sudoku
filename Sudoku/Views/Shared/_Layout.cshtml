@@ -21,24 +21,16 @@
     <div class="container">
         <a class="navbar-brand">Sudoku</a>
         <form class="form-inline" id="newSudoku">
+            <fieldset class="form-group">
+                <label for="size">Size</label>
+                <input type="range" name="size" class="custom-range" id="size" min="4" max="25">
+            </fieldset>
             <div class="form-group">
                 <select name="difficulty" class="form-control" id="difficulty" required>
                     <option value="" hidden>Difficulty</option>
                     <option>Easy</option>
                     <option>Medium</option>
                     <option>Hard</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <select name="size" class="form-control" id="size" required>
-                    <option value="" hidden>Size</option>
-                    <option value="4" title="Four 2x2 regions">Shi Doku</option>
-                    <option value="6" title="Six 2x3 regions">Roku Doku</option>
-                    <option value="9" title="Classic 9x9 grid">Sudoku</option>
-                    <option value="12" title="Twelve 3x4 regions">Maxi</option>
-                    <option value="25" title="Twenty-five 5×5 regions">Sudoku the Giant</option>
-                    <option value="100" title="One hundred 10×10 regions">Sudoku-zilla</option>
-                    <option>Custom</option>
                 </select>
             </div>
             <div class="btn-group btn-group-toggle" data-toggle="buttons">

@@ -1,5 +1,6 @@
 ﻿$(function() {
     var modeValue = $("input[name='mode']:checked").val();
+    $("#size").val(9);
 
     // Enable or disable the difficulty select depending on the selected mode
     $("input[name='mode']").click(function() {
