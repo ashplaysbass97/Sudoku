@@ -19,6 +19,8 @@ namespace Sudoku.ServiceLayer
                 {
                     Region region = new Region
                     {
+                        Width = dimensions[1],
+                        Height = dimensions[0],
                         Coordinates = new Point(regionX, regionY)
                     };
                     regions.Add(region);

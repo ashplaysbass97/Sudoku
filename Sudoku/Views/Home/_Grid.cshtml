@@ -1,13 +1,42 @@
 ﻿@model Sudoku.Models.Grid
 
 <table>
-    @for (int y = Model.Size - 1; y >= 0; y--)
-    {
-        <tr>
-            @for (int x = 0; x < Model.Size; x++)
-            {
-                <td><div class="content">@x, @y</div></td>
-            }
-        </tr>
+    @{
+        int regionWidth = Model.Regions[0].Width;
+        int regionHeight = Model.Regions[0].Height;
+
+        for (int y = Model.Size - 1; y >= 0; y--)
+        {
+            <tr>
+                @for (int x = 0; x < Model.Size; x++)
+                {
+                    string classes = "content";
+
+                    // Whether the cell is at the top or bottom of a region
+                    if (y % regionHeight == 0)
+                    {
+                        classes += " bottom";
+                    }
+                    else if ((y + 1) % regionHeight == 0)
+                    {
+                        classes += " top";
+                    }
+
+                    // Whether the cell is on the left or right of a region
+                    if (x % regionWidth == 0)
+                    {
+                        classes += " left";
+                    }
+                    else if ((x + 1) % regionWidth == 0)
+                    {
+                        classes += " right";
+                    }
+
+                    <td>
+                        <div class="@classes">@x, @y</div>
+                    </td>
+                }
+            </tr>
+        }
     }
 </table>
