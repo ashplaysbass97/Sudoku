@@ -1,1 +1,13 @@
 ﻿@model Sudoku.Models.Grid
+
+<table>
+    @for (int y = Model.Size - 1; y >= 0; y--)
+    {
+        <tr>
+            @for (int x = 0; x < Model.Size; x++)
+            {
+                <td><div class="content">@x, @y</div></td>
+            }
+        </tr>
+    }
+</table>

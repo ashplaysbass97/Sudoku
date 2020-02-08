@@ -3,15 +3,18 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div id="timer">
-    <partial name="_Timer"/>
-</div>
-<div id="grid">
-
-</div>
-<div id="keypad">
-    <partial name="_Keypad"/>
-</div>
-<div id="buttons">
-    <partial name="_Buttons"/>
+<div class="container">
+    <div class="row">
+        <div class="col-8" id="timer">
+            <partial name="_Timer" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8" id="grid">
+            <partial name="_EmptyGrid" />
+        </div>
+        <div class="col-lg-4" id="buttons">
+            <partial name="_Buttons" />
+        </div>
+    </div>
 </div>

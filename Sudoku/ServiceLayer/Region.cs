@@ -7,5 +7,10 @@ namespace Sudoku.ServiceLayer
     {
         public Point Coordinates { get; set; }
         public List<Cell> Cells { get; set; }
+
+        public Region()
+        {
+            Cells = new List<Cell>();
+        }
     }
 }
