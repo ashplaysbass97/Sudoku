@@ -1,6 +1,18 @@
 ﻿$(function() {
+    var slider = $("#slider");
+    var size = $("#size");
+    var sizes = [4, 6, 8, 9, 10, 12, 14, 15, 16];
     var modeValue = $("input[name='mode']:checked").val();
-    $("#size").val(9);
+
+    // Set the max and default value for the slider
+    slider.attr('max', sizes.length - 1);
+    slider.val(3);
+    size.text("Size: 9");
+
+    // Update the size label when the slider changes
+    slider.on('input', function () {
+        size.text("Size: " + sizes[this.value]);
+    });
 
     // Enable or disable the difficulty select depending on the selected mode
     $("input[name='mode']").click(function() {
@@ -17,7 +29,7 @@
             type: "POST",
             data: {
                 difficulty: $("#difficulty").val(),
-                size: $("#size").val(),
+                size: size.text().substring(5, size.text().length),
                 mode: modeValue
             },
             success: function(result) {

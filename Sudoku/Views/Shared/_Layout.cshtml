@@ -22,11 +22,11 @@
         <a class="navbar-brand">Sudoku</a>
         <form class="form-inline" id="newSudoku">
             <fieldset class="form-group">
-                <label for="size">Size</label>
-                <input type="range" name="size" class="custom-range" id="size" min="4" max="25">
+                <label for="size" id="size">Size</label>
+                <input type="range" class="custom-range" id="slider" min="0">
             </fieldset>
             <div class="form-group">
-                <select name="difficulty" class="form-control" id="difficulty" required>
+                <select class="form-control" id="difficulty" required>
                     <option value="" hidden>Difficulty</option>
                     <option>Easy</option>
                     <option>Medium</option>
