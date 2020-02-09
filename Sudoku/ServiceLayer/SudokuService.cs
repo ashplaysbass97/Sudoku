@@ -59,14 +59,13 @@ namespace Sudoku.ServiceLayer
             {
                 for (int i = 1; i < size; i++)
                 {
-                    double j = size / i;
+                    double j = (double)size / i;
                     if (j == Math.Floor(j))
                     {
                         width = (int)j;
                         height = i;
+                        if (j <= i) break;
                     }
-
-                    if (j <= i) break;
                 }
             }
 
