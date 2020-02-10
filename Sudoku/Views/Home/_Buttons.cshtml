@@ -1,27 +1,13 @@
 ﻿<div class="container">
-    @if (Model != null)
-    {
-        int regionWidth = Model.Regions[0].Width;
-        int regionHeight = Model.Regions[0].Height;
-
+    @{
+        int regionWidth = Model?.Regions[0].Width ?? 3;
+        int regionHeight = Model?.Regions[0].Height ?? 3;
         for (int i = 0; i < regionHeight; i++)
         {
             <div class="row">
-            @for (int j = 1; j <= regionWidth; j++)
-            {
-                <button type="button" class="btn btn-secondary">@(i * regionWidth + j)</button>
-            }
-            </div>
-        }
-    }
-    else
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            <div class="row">
-                @for (int j = 1; j <= 3; j++)
+                @for (int j = 1; j <= regionWidth; j++)
                 {
-                    <button type="button" class="btn btn-secondary">@(i * 3 + j)</button>
+                    <button type="button" class="btn btn-secondary">@(i * regionWidth + j)</button>
                 }
             </div>
         }
