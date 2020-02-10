@@ -33,7 +33,7 @@
                 mode: modeValue
             },
             success: function(result) {
-                $("#grid").html(result);
+                $("#body").html(result);
             },
             error: function() {
                 alert("error");

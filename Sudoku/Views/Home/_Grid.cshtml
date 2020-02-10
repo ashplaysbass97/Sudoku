@@ -2,41 +2,83 @@
 
 <table>
     @{
-        int regionWidth = Model.Regions[0].Width;
-        int regionHeight = Model.Regions[0].Height;
-
-        for (int y = Model.Size - 1; y >= 0; y--)
+        if (Model != null)
         {
-            <tr>
-                @for (int x = 0; x < Model.Size; x++)
-                {
-                    string classes = "content";
+            int regionWidth = Model.Regions[0].Width;
+            int regionHeight = Model.Regions[0].Height;
 
-                    // Whether the cell is at the top or bottom of a region
-                    if (y % regionHeight == 0)
+            for (int y = Model.Size - 1; y >= 0; y--)
+            {
+                <tr>
+                    @for (int x = 0; x < Model.Size; x++)
                     {
-                        classes += " bottom";
-                    }
-                    else if ((y + 1) % regionHeight == 0)
-                    {
-                        classes += " top";
-                    }
+                        string classes = "content";
 
-                    // Whether the cell is on the left or right of a region
-                    if (x % regionWidth == 0)
-                    {
-                        classes += " left";
-                    }
-                    else if ((x + 1) % regionWidth == 0)
-                    {
-                        classes += " right";
-                    }
+                        // Whether the cell is at the top or bottom of a region
+                        if (y % regionHeight == 0)
+                        {
+                            classes += " bottom";
+                        }
+                        else if ((y + 1) % regionHeight == 0)
+                        {
+                            classes += " top";
+                        }
 
-                    <td>
-                        <div class="@classes">@x, @y</div>
-                    </td>
-                }
-            </tr>
+                        // Whether the cell is on the left or right of a region
+                        if (x % regionWidth == 0)
+                        {
+                            classes += " left";
+                        }
+                        else if ((x + 1) % regionWidth == 0)
+                        {
+                            classes += " right";
+                        }
+
+                        <td>
+                            <div class="@classes">@x, @y</div>
+                        </td>
+                    }
+                </tr>
+            }
+        }
+        else
+        {
+            @for (int i = 0; i < 3; i++)
+            {
+                <tr>
+                    <td><div class="content top left"></div></td>
+                    <td><div class="content top"></div></td>
+                    <td><div class="content top right"></div></td>
+                    <td><div class="content top left"></div></td>
+                    <td><div class="content top"></div></td>
+                    <td><div class="content top right"></div></td>
+                    <td><div class="content top left"></div></td>
+                    <td><div class="content top"></div></td>
+                    <td><div class="content top right"></div></td>
+                </tr>
+                <tr>
+                    <td><div class="content left"></div></td>
+                    <td><div class="content"></div></td>
+                    <td><div class="content right"></div></td>
+                    <td><div class="content left"></div></td>
+                    <td><div class="content"></div></td>
+                    <td><div class="content right"></div></td>
+                    <td><div class="content left"></div></td>
+                    <td><div class="content"></div></td>
+                    <td><div class="content right"></div></td>
+                </tr>
+                <tr>
+                    <td><div class="content bottom left"></div></td>
+                    <td><div class="content bottom"></div></td>
+                    <td><div class="content bottom right"></div></td>
+                    <td><div class="content bottom left"></div></td>
+                    <td><div class="content bottom"></div></td>
+                    <td><div class="content bottom right"></div></td>
+                    <td><div class="content bottom left"></div></td>
+                    <td><div class="content bottom"></div></td>
+                    <td><div class="content bottom right"></div></td>
+                </tr>
+            }
         }
     }
 </table>

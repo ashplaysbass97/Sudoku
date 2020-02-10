@@ -1,6 +1,11 @@
-﻿@{
+﻿@model Sudoku.Models.Grid
+
+@{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    if (Model == null)
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }
 
 <div class="container">
@@ -11,7 +16,7 @@
     </div>
     <div class="row">
         <div class="col-lg-8" id="grid">
-            <partial name="_EmptyGrid" />
+            <partial name="_Grid" />
         </div>
         <div class="col-lg-4" id="buttons">
             <partial name="_Buttons" />
