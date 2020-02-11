@@ -2,27 +2,39 @@
     @{
         int regionWidth = Model?.Regions[0].Width ?? 3;
         int regionHeight = Model?.Regions[0].Height ?? 3;
-        for (int i = 0; i < regionHeight; i++)
+        for (int i = 0; i < regionWidth; i++)
         {
             <div class="row">
-                @for (int j = 1; j <= regionWidth; j++)
+                @for (int j = 1; j <= regionHeight; j++)
                 {
-                    <button type="button" class="btn btn-secondary">@(i * regionWidth + j)</button>
+                <div class="col">
+                    <button type="button" class="btn btn-secondary btn-lg btn-block">@(i * regionHeight + j)</button>
+                </div>
                 }
             </div>
         }
     }
     <hr/>
     <div class="row">
-        <button type="button" class="btn btn-secondary">Notes</button>
-        <button type="button" class="btn btn-secondary">Hint</button>
+        <div class="col">
+            <button type="button" class="btn btn-secondary btn-lg btn-block">Notes</button>
+        </div>
+        <div class="col">
+            <button type="button" class="btn btn-secondary btn-lg btn-block">Hint</button>
+        </div>
     </div>
     <div class="row">
-        <button type="button" class="btn btn-secondary">Undo</button>
-        <button type="button" class="btn btn-secondary">Erase</button>
+        <div class="col">
+            <button type="button" class="btn btn-secondary btn-lg btn-block">Undo</button>
+        </div>
+        <div class="col">
+            <button type="button" class="btn btn-secondary btn-lg btn-block">Erase</button>
+        </div>
     </div>
     <hr/>
     <div class="row">
-        <button type="button" class="btn btn-success btn-lg btn-block">Submit</button>
+        <div class="col">
+            <button type="button" class="btn btn-success btn-lg btn-block">Submit</button>
+        </div>
     </div>
 </div>

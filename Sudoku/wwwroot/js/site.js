@@ -7,11 +7,11 @@
     // Set the max and default value for the slider
     slider.attr('max', sizes.length - 1);
     slider.val(3);
-    size.text("Size: 9");
+    size.text("Size: 9x9");
 
     // Update the size label when the slider changes
     slider.on('input', function () {
-        size.text("Size: " + sizes[this.value]);
+        size.text("Size: " + sizes[this.value] + "x" + sizes[this.value]);
     });
 
     // Enable or disable the difficulty select depending on the selected mode
@@ -29,7 +29,7 @@
             type: "POST",
             data: {
                 difficulty: $("#difficulty").val(),
-                size: size.text().substring(5, size.text().length),
+                size: size.text().substring(5, size.text().length).split('x')[0],
                 mode: modeValue
             },
             success: function(result) {

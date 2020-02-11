@@ -45,3 +45,13 @@ td .left {
 td .right {
     border-right-width: 2px;
 }
+
+#buttons .container .row {
+    padding-bottom: 15px;
+}
+
+#buttons .container .row:nth-last-child(1),
+#buttons .container .row:nth-last-child(3),
+#buttons .container .row:nth-last-child(6) {
+    padding-bottom: 0;
+}
