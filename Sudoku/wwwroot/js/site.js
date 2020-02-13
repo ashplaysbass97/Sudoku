@@ -1,4 +1,4 @@
-﻿var s = 0, m = 0;
+﻿var seconds = 0, minutes = 0;
 var timer;
 
 $(function () {
@@ -37,19 +37,13 @@ $(function () {
             },
             success: function(result) {
                 $("#body").html(result);
+                resetTimer();
                 startTimer();
             },
             error: function() {
                 alert("error");
             }
         });
-    });
-
-    $("#playButton").click(function () {
-        startTimer();
-    });
-    $("#pauseButton").click(function () {
-        pauseTimer();
     });
 });
 
@@ -62,11 +56,11 @@ function startTimer() {
 }
 
 function updateTimer() {
-    $("#time").text(m + ":" + (s < 10 ? "0" + s : s));
-    s++;
-    if (s === 60) {
-        s = 0;
-        m++;
+    $("#time").text(minutes + ":" + (seconds < 10 ? "0" + seconds : seconds));
+    seconds++;
+    if (seconds === 60) {
+        seconds = 0;
+        minutes++;
     }
 }
 
@@ -75,4 +69,9 @@ function pauseTimer() {
     timer = false;
     $("#pauseButton").attr("hidden", true);
     $("#playButton").removeAttr("hidden");
+}
+
+function resetTimer() {
+    seconds = 0;
+    minutes = 0;
 }
