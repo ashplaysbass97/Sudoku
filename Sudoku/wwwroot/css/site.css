@@ -55,3 +55,15 @@ td .right {
 #buttons .container .row:nth-last-child(6) {
     padding-bottom: 0;
 }
+
+#timer {
+    padding: 1rem 0 0 0;
+}
+
+#timerButton {
+    text-align: right;
+}
+
+#playButton, #pauseButton {
+    cursor: pointer;
+}

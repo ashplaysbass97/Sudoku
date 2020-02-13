@@ -1,4 +1,7 @@
-﻿$(function() {
+﻿var s = 0, m = 0;
+var timer;
+
+$(function () {
     var slider = $("#slider");
     var size = $("#size");
     var sizes = [4, 6, 8, 9, 10, 12, 14, 15, 16];
@@ -34,10 +37,42 @@
             },
             success: function(result) {
                 $("#body").html(result);
+                startTimer();
             },
             error: function() {
                 alert("error");
             }
         });
     });
+
+    $("#playButton").click(function () {
+        startTimer();
+    });
+    $("#pauseButton").click(function () {
+        pauseTimer();
+    });
 });
+
+function startTimer() {
+    if (!timer) {
+        timer = setInterval(updateTimer, 1000);
+    }
+    $("#playButton").attr("hidden", true);
+    $("#pauseButton").removeAttr("hidden");
+}
+
+function updateTimer() {
+    $("#time").text(m + ":" + (s < 10 ? "0" + s : s));
+    s++;
+    if (s === 60) {
+        s = 0;
+        m++;
+    }
+}
+
+function pauseTimer() {
+    clearInterval(timer);
+    timer = false;
+    $("#pauseButton").attr("hidden", true);
+    $("#playButton").removeAttr("hidden");
+}
