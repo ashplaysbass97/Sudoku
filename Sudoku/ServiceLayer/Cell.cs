@@ -6,5 +6,6 @@ namespace Sudoku.ServiceLayer
     {
         public Point Coordinates { get; set; }
         public Region Region { get; set; }
+        public int Value { get; set; }
     }
 }
