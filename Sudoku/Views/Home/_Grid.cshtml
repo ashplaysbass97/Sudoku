@@ -33,9 +33,9 @@
 
                     <td>
                         <div class="@classes">
-                            (@(Model?.Cells[x * gridSize + y].Coordinates.X ?? x), @(Model?.Cells[x * gridSize + y].Coordinates.Y ?? y))
+                            (@(Model?.Cells[x + y * gridSize].Coordinates.X ?? x), @(Model?.Cells[x + y * gridSize].Coordinates.Y ?? y))
                             <br/>
-                            @(Model?.Cells[x * gridSize + y].Value ?? -1)
+                            @(Model?.Cells[x + y * gridSize].Value ?? -1)
                         </div>
                     </td>
                 }

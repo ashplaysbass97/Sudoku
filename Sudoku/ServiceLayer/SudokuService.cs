@@ -34,7 +34,7 @@ namespace Sudoku.ServiceLayer
                             Cell cell = new Cell
                             {
                                 Coordinates = new Point(regionX * dimensions[1] + cellX, regionY * dimensions[0] + cellY),
-                                Value = values[regionX * dimensions[1] + cellX, regionY * dimensions[0] + cellY]
+                                Value = values[regionY * dimensions[0] + cellY, regionX * dimensions[1] + cellX]
                             };
                             cells.Add(cell);
 
@@ -98,6 +98,50 @@ namespace Sudoku.ServiceLayer
                 };
             }
             return new int[size, size];
+        }
+
+        private bool IsValuePossible(Grid grid, Cell cell, int value)
+        {
+            List<Cell> cellsInHouse = GetCellsInHouse(grid.Size, grid.Cells, cell);
+
+            foreach (Cell cellInHouse in cellsInHouse)
+            {
+                if (cellInHouse.Value == value)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private List<Cell> GetCellsInHouse(int gridSize, List<Cell> cells, Cell cell)
+        {
+            List<Cell> cellsInHouse = new List<Cell>();
+
+            for (int i = 0; i < gridSize; i++)
+            {
+                // Add cells in same row
+                if (i != cell.Coordinates.X)
+                {
+                    cellsInHouse.Add(cells[i + cell.Coordinates.Y * gridSize]);
+                }
+
+                // Add cells in same column
+                if (i != cell.Coordinates.Y)
+                {
+                    cellsInHouse.Add(cells[cell.Coordinates.X + i * gridSize]);
+                }
+            }
+
+            // Add cells in same region
+            foreach (Cell cellInHouse in cell.Region.Cells)
+            {
+                if (!cellsInHouse.Contains(cellInHouse) && !cellInHouse.Equals(cell))
+                {
+                    cellsInHouse.Add(cellInHouse);
+                }
+            }
+            return cellsInHouse;
         }
     }
 }
