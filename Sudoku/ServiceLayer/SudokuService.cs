@@ -100,6 +100,32 @@ namespace Sudoku.ServiceLayer
             return new int[size, size];
         }
 
+        private bool SolveSudoku(Grid grid)
+        {
+            foreach (Cell cell in grid.Cells)
+            {
+                if (cell.Value == 0)
+                {
+                    for (int value = 1; value <= grid.Size; value++)
+                    {
+                        if (IsValuePossible(grid, cell, value))
+                        {
+                            cell.Value = value;
+                            if (SolveSudoku(grid))
+                            {
+                                return true;
+                            }
+                            cell.Value = 0;
+                        }
+                    }
+                    return false;
+                }
+            }
+
+            // TODO detect an invalid Sudoku
+            return true;
+        }
+
         private bool IsValuePossible(Grid grid, Cell cell, int value)
         {
             List<Cell> cellsInHouse = GetCellsInHouse(grid.Size, grid.Cells, cell);
