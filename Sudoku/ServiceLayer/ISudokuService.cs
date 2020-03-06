@@ -5,6 +5,6 @@ namespace Sudoku.ServiceLayer
 {
     internal interface ISudokuService
     {
-        Grid SetupGrid(int size);
+        Grid SetupGrid(int size, string mode);
     }
 }

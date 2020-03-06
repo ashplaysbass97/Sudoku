@@ -32,11 +32,7 @@
                     }
 
                     <td>
-                        <div class="@classes">
-                            (@(Model?.Cells[x + y * gridSize].Coordinates.X ?? x), @(Model?.Cells[x + y * gridSize].Coordinates.Y ?? y))
-                            <br/>
-                            @(Model?.Cells[x + y * gridSize].Value ?? -1)
-                        </div>
+                            <input type="text" class="@classes" id="@x,@y" value="@Model?.Cells[x + y * gridSize].Value" />
                     </td>
                 }
             </tr>

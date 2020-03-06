@@ -8,10 +8,10 @@ namespace Sudoku.ServiceLayer
 {
     public class SudokuService : ISudokuService
     {
-        public Grid SetupGrid(int size)
+        public Grid SetupGrid(int size, string mode)
         {
             int[] dimensions = CalculateGridDimensions(size);
-            int[,] values = GenerateSudoku(size);
+            int[,] values = mode == "generate" ? GenerateSudoku(size) : null;
 
             List<Region> regions = new List<Region>();
             List<Cell> cells = new List<Cell>();
@@ -34,7 +34,7 @@ namespace Sudoku.ServiceLayer
                             Cell cell = new Cell
                             {
                                 Coordinates = new Point(regionX * dimensions[1] + cellX, regionY * dimensions[0] + cellY),
-                                Value = values[regionY * dimensions[0] + cellY, regionX * dimensions[1] + cellX]
+                                Value = values?[regionY * dimensions[0] + cellY, regionX * dimensions[1] + cellX]
                             };
                             cells.Add(cell);
 
@@ -104,7 +104,7 @@ namespace Sudoku.ServiceLayer
         {
             foreach (Cell cell in grid.Cells)
             {
-                if (cell.Value == 0)
+                if (cell.Value == null)
                 {
                     for (int value = 1; value <= grid.Size; value++)
                     {
@@ -115,7 +115,7 @@ namespace Sudoku.ServiceLayer
                             {
                                 return true;
                             }
-                            cell.Value = 0;
+                            cell.Value = null;
                         }
                     }
                     return false;

@@ -22,12 +22,14 @@ td:after {
 }
 
 td .content {
-    border: 1px solid black;
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
+    width: 100%;
+    border: 1px solid black;
+    text-align: center;
 }
 
 td .top {
