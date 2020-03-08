@@ -37,8 +37,6 @@ namespace Sudoku.ServiceLayer
                                 Value = values?[regionY * dimensions[0] + cellY, regionX * dimensions[1] + cellX]
                             };
                             cells.Add(cell);
-
-                            cell.Region = region;
                             region.Cells.Add(cell);
                         }
                     }
@@ -100,7 +98,7 @@ namespace Sudoku.ServiceLayer
             return new int[size, size];
         }
 
-        private bool SolveSudoku(Grid grid)
+        public bool SolveSudoku(Grid grid)
         {
             foreach (Cell cell in grid.Cells)
             {
@@ -128,7 +126,7 @@ namespace Sudoku.ServiceLayer
 
         private bool IsValuePossible(Grid grid, Cell cell, int value)
         {
-            List<Cell> cellsInHouse = GetCellsInHouse(grid.Size, grid.Cells, cell);
+            List<Cell> cellsInHouse = GetCellsInHouse(grid.Size, FindCellRegion(grid, cell), grid.Cells, cell);
 
             foreach (Cell cellInHouse in cellsInHouse)
             {
@@ -140,7 +138,23 @@ namespace Sudoku.ServiceLayer
             return true;
         }
 
-        private List<Cell> GetCellsInHouse(int gridSize, List<Cell> cells, Cell cell)
+        private Region FindCellRegion(Grid grid, Cell cell)
+        {
+            foreach (Region region in grid.Regions)
+            {
+                foreach (Cell comparison in region.Cells)
+                {
+                    if (comparison.Coordinates.Equals(cell.Coordinates))
+                    {
+                        return region;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private List<Cell> GetCellsInHouse(int gridSize, Region region, List<Cell> cells, Cell cell)
         {
             List<Cell> cellsInHouse = new List<Cell>();
 
@@ -160,7 +174,7 @@ namespace Sudoku.ServiceLayer
             }
 
             // Add cells in same region
-            foreach (Cell cellInHouse in cell.Region.Cells)
+            foreach (Cell cellInHouse in region.Cells)
             {
                 if (!cellsInHouse.Contains(cellInHouse) && !cellInHouse.Equals(cell))
                 {

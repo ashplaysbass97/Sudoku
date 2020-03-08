@@ -38,7 +38,12 @@ $(function () {
             success: function(result) {
                 $("#body").html(result);
                 resetTimer();
-                startTimer();
+                if (modeValue === "generate") {
+                    $("#submit").attr("onclick", "submitSudoku()");
+                    startTimer();
+                } else {
+                    $("#submit").attr("onclick", "solveSudoku()");
+                }
             },
             error: function() {
                 alert("error");
@@ -46,6 +51,19 @@ $(function () {
         });
     });
 });
+
+function solveSudoku() {
+    $.ajax({
+        url: "/Home/SolveSudoku",
+        type: "POST",
+        success: function (result) {
+            $("#body").html(result);
+        },
+        error: function () {
+            alert("error");
+        }
+    });
+}
 
 function startTimer() {
     if (!timer) {

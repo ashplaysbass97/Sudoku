@@ -7,6 +7,11 @@ namespace Sudoku.Controllers
     public class HomeController : Controller
     {
         private readonly ISudokuService _sudokuService = new SudokuService();
+        private Grid Grid
+        {
+            get => HttpContext.Session.GetObject<Grid>("Grid");
+            set => HttpContext.Session.SetObject("Grid", value);
+        }
 
         public IActionResult Index()
         {
@@ -15,8 +20,14 @@ namespace Sudoku.Controllers
 
         public IActionResult NewSudoku(string difficulty, int size, string mode)
         {
-            Grid grid = _sudokuService.SetupGrid(size, mode);
-            return PartialView("Index", grid);
+            Grid = _sudokuService.SetupGrid(size, mode);
+            return PartialView("Index", Grid);
+        }
+
+        public IActionResult SolveSudoku()
+        {
+            _sudokuService.SolveSudoku(Grid);
+            return PartialView("Index", Grid);
         }
     }
 }
