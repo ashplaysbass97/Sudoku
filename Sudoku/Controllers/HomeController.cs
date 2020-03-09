@@ -24,9 +24,9 @@ namespace Sudoku.Controllers
             return PartialView("Index", Grid);
         }
 
-        public IActionResult SolveSudoku()
+        public IActionResult SolveSudoku(int?[] sudoku)
         {
-            _sudokuService.SolveSudoku(Grid);
+            Grid = _sudokuService.SolveSudoku(_sudokuService.UpdateGrid(Grid, sudoku));
             return PartialView("Index", Grid);
         }
     }

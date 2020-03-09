@@ -31,9 +31,9 @@ $(function () {
             url: "/Home/NewSudoku",
             type: "POST",
             data: {
-                difficulty: $("#difficulty").val(),
-                size: size.text().substring(5, size.text().length).split('x')[0],
-                mode: modeValue
+                "difficulty": $("#difficulty").val(),
+                "size": size.text().substring(5, size.text().length).split('x')[0],
+                "mode": modeValue
             },
             success: function(result) {
                 $("#body").html(result);
@@ -56,13 +56,28 @@ function solveSudoku() {
     $.ajax({
         url: "/Home/SolveSudoku",
         type: "POST",
+        data: {
+            "sudoku": getGrid()
+        },
         success: function (result) {
             $("#body").html(result);
         },
-        error: function () {
-            alert("error");
+        error: function (error) {
+            console.log(error);
         }
     });
+}
+
+// Ideally, this should return a two dimensional array but am having difficulties passing it to the controller
+function getGrid() {
+    var cells = $("#grid :input");
+    var size = cells.length;
+
+    var grid = new Array(size);
+    for (var i = 0; i < size; i++) {
+        grid[i] = cells[i].value;
+    }
+    return grid;
 }
 
 function startTimer() {

@@ -77,6 +77,15 @@ namespace Sudoku.ServiceLayer
             return new[] {width, height};
         }
 
+        public Grid UpdateGrid(Grid grid, int?[] sudoku)
+        {
+            for (int i = 0; i < sudoku.Length; i++)
+            {
+                grid.Cells[i].Value = sudoku[i];
+            }
+            return grid;
+        }
+
         private int[,] GenerateSudoku(int size)
         {
             // TODO Actually generate Sudokus
@@ -98,7 +107,12 @@ namespace Sudoku.ServiceLayer
             return new int[size, size];
         }
 
-        public bool SolveSudoku(Grid grid)
+        public Grid SolveSudoku(Grid grid)
+        {
+            return BacktrackingAlgorithm(grid) ? grid : null;
+        }
+
+        private bool BacktrackingAlgorithm(Grid grid)
         {
             foreach (Cell cell in grid.Cells)
             {
@@ -109,7 +123,7 @@ namespace Sudoku.ServiceLayer
                         if (IsValuePossible(grid, cell, value))
                         {
                             cell.Value = value;
-                            if (SolveSudoku(grid))
+                            if (BacktrackingAlgorithm(grid))
                             {
                                 return true;
                             }
