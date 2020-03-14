@@ -21,6 +21,10 @@ namespace Sudoku.Controllers
         public IActionResult NewSudoku(string difficulty, int size, string mode)
         {
             Grid = _sudokuService.SetupGrid(size, mode);
+            if (mode == "generate")
+            {
+                Grid = _sudokuService.GenerateSudoku(Grid, difficulty);
+            }
             return PartialView("Index", Grid);
         }
 

@@ -11,7 +11,6 @@ namespace Sudoku.ServiceLayer
         public Grid SetupGrid(int size, string mode)
         {
             int[] dimensions = CalculateGridDimensions(size);
-            int[,] values = mode == "generate" ? GenerateSudoku(size) : null;
 
             List<Cell> cells = new List<Cell>();
             for (int regionX = 0; regionX < dimensions[0]; regionX++)
@@ -25,7 +24,6 @@ namespace Sudoku.ServiceLayer
                             Cell cell = new Cell
                             {
                                 Coordinates = new Point(regionX * dimensions[1] + cellX, regionY * dimensions[0] + cellY),
-                                Value = values?[regionY * dimensions[0] + cellY, regionX * dimensions[1] + cellX]
                                 Region = new Point(regionX, regionY)
                             };
                             cells.Add(cell);
@@ -73,6 +71,27 @@ namespace Sudoku.ServiceLayer
             return new[] {width, height};
         }
 
+        public Grid GenerateSudoku(Grid grid, string difficulty)
+        {
+            /*Random r = new Random();
+            foreach (int i in Enumerable.Range(0, grid.Cells.Count).OrderBy(x => r.Next()))
+            {
+                for (int j = 1; j <= grid.Size; j++)
+                {
+                    if (IsValuePossible(grid, grid.Cells[i], j))
+                    {
+                        Cell regionCell = FindCellRegion(grid, grid.Cells[i]).Cells
+                            .FirstOrDefault((x => x.Coordinates == grid.Cells[i].Coordinates));
+                        regionCell.Value = j;
+
+                        grid.Cells[i].Value = j;
+                        break;
+                    }
+                }
+            }*/
+            return BacktrackingAlgorithm(grid) ? grid : null;
+        }
+
         public Grid UpdateGrid(Grid grid, int?[] sudoku)
         {
             for (int i = 0; i < sudoku.Length; i++)
@@ -80,27 +99,6 @@ namespace Sudoku.ServiceLayer
                 grid.Cells[i].Value = sudoku[i];
             }
             return grid;
-        }
-
-        private int[,] GenerateSudoku(int size)
-        {
-            // TODO Actually generate Sudokus
-            if (size == 9)
-            {
-                return new int[9, 9]
-                {
-                    {0, 0, 4, 3, 0, 0, 2, 0, 9},
-                    {0, 0, 5, 0, 0, 9, 0, 0, 1},
-                    {0, 7, 0, 0, 6, 0, 0, 4, 3},
-                    {0, 0, 6, 0, 0, 2, 0, 8, 7},
-                    {1, 9, 0, 0, 0, 7, 4, 0, 0},
-                    {0, 5, 0, 0, 8, 3, 0, 0, 0},
-                    {6, 0, 0, 0, 0, 0, 1, 0, 5},
-                    {0, 0, 3, 5, 0, 8, 6, 9, 0},
-                    {0, 4, 2, 9, 1, 0, 3, 0, 0}
-                };
-            }
-            return new int[size, size];
         }
 
         public Grid SolveSudoku(Grid grid)
@@ -114,7 +112,8 @@ namespace Sudoku.ServiceLayer
             {
                 if (cell.Value == null)
                 {
-                    for (int value = 1; value <= grid.Size; value++)
+                    Random random = new Random();
+                    foreach (int value in Enumerable.Range(1, grid.Size).OrderBy(x => random.Next()))
                     {
                         if (IsValuePossible(grid, cell, value))
                         {
