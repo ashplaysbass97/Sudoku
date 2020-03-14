@@ -8,6 +8,8 @@ namespace Sudoku.ServiceLayer
 {
     public class SudokuService : ISudokuService
     {
+        private List<Cell> tmpSolution = null;
+
         public Grid SetupGrid(int size, string mode)
         {
             int[] regionSize = CalculateRegionSize(size);
@@ -64,7 +66,21 @@ namespace Sudoku.ServiceLayer
 
         public Grid GenerateSudoku(Grid grid, string difficulty)
         {
-            return BacktrackingAlgorithm(grid) ? grid : null;
+            BacktrackingAlgorithm(grid.Size, grid.Cells, false);
+
+            Random random = new Random();
+            foreach (int i in Enumerable.Range(0, grid.Cells.Count - 1).OrderBy(x => random.Next()))
+            {
+                tmpSolution = null;
+                List<Cell> tmp = grid.Cells.ConvertAll(x => new Cell { Coordinates = x.Coordinates, Region = x.Region, Value = x.Value });
+                tmp[i].Value = null;
+                if (!BacktrackingAlgorithm(grid.Size, tmp, true) && tmpSolution != null)
+                {
+                    grid.Cells[i].Value = null;
+                }
+            }
+
+            return grid;
         }
 
         public Grid UpdateGrid(Grid grid, int?[] sudoku)
@@ -78,22 +94,22 @@ namespace Sudoku.ServiceLayer
 
         public Grid SolveSudoku(Grid grid)
         {
-            return BacktrackingAlgorithm(grid) ? grid : null;
+            return BacktrackingAlgorithm(grid.Size, grid.Cells, false) ? grid : null;
         }
 
-        private bool BacktrackingAlgorithm(Grid grid)
+        private bool BacktrackingAlgorithm(int gridSize, List<Cell> cells, bool checkUniqueness)
         {
-            foreach (Cell cell in grid.Cells)
+            foreach (Cell cell in cells)
             {
                 if (cell.Value == null)
                 {
                     Random random = new Random();
-                    foreach (int value in Enumerable.Range(1, grid.Size).OrderBy(x => random.Next()))
+                    foreach (int value in Enumerable.Range(1, gridSize).OrderBy(x => random.Next()))
                     {
-                        if (IsValuePossible(grid, cell, value))
+                        if (IsValuePossible(gridSize, cells, cell, value))
                         {
                             cell.Value = value;
-                            if (BacktrackingAlgorithm(grid))
+                            if (BacktrackingAlgorithm(gridSize, cells, checkUniqueness))
                             {
                                 return true;
                             }
@@ -104,13 +120,18 @@ namespace Sudoku.ServiceLayer
                 }
             }
 
-            // TODO detect an invalid Sudoku
+            if (checkUniqueness && tmpSolution == null)
+            {
+                tmpSolution = cells.ConvertAll(x => new Cell { Coordinates = x.Coordinates, Region = x.Region, Value = x.Value });
+                return false;
+            }
+
             return true;
         }
 
-        private bool IsValuePossible(Grid grid, Cell cell, int value)
+        private bool IsValuePossible(int gridSize, List<Cell> cells, Cell cell, int value)
         {
-            List<Cell> cellsInHouse = GetCellsInHouse(grid.Size, grid.Cells, cell);
+            List<Cell> cellsInHouse = GetCellsInHouse(gridSize, cells, cell);
 
             foreach (Cell cellInHouse in cellsInHouse)
             {
