@@ -10,42 +10,33 @@ namespace Sudoku.ServiceLayer
     {
         public Grid SetupGrid(int size, string mode)
         {
-            int[] dimensions = CalculateGridDimensions(size);
+            int[] regionSize = CalculateRegionSize(size);
 
             List<Cell> cells = new List<Cell>();
-            for (int regionX = 0; regionX < dimensions[0]; regionX++)
+            for (int y = 0; y < size; y++)
             {
-                for (int regionY = 0; regionY < dimensions[1]; regionY++)
+                for (int x = 0; x < size; x++)
                 {
-                    for (int cellX = 0; cellX < dimensions[1]; cellX++)
+                    Cell cell = new Cell
                     {
-                        for (int cellY = 0; cellY < dimensions[0]; cellY++)
-                        {
-                            Cell cell = new Cell
-                            {
-                                Coordinates = new Point(regionX * dimensions[1] + cellX, regionY * dimensions[0] + cellY),
-                                Region = new Point(regionX, regionY)
-                            };
-                            cells.Add(cell);
-                        }
-                    }
+                        Coordinates = new Point(x, y),
+                        Region = new Point(x / regionSize[0], y / regionSize[1])
+                    };
+                    cells.Add(cell);
                 }
             }
-
-            // TODO See whether regions and cells can be created efficiently in the correct order
-            cells = cells.OrderBy(cell => cell.Coordinates.Y).ThenBy(cell => cell.Coordinates.X).ToList();
 
             Grid grid = new Grid
             {
                 Size = size,
-                RegionWidth = dimensions[1],
-                RegionHeight = dimensions[0],
+                RegionWidth = regionSize[0],
+                RegionHeight = regionSize[1],
                 Cells = cells
             };
             return grid;
         }
 
-        private int[] CalculateGridDimensions(int size)
+        private int[] CalculateRegionSize(int size)
         {
             int width = 0;
             int height = 0;
@@ -61,8 +52,8 @@ namespace Sudoku.ServiceLayer
                     double j = (double)size / i;
                     if (j == Math.Floor(j))
                     {
-                        width = (int)j;
-                        height = i;
+                        width = i;
+                        height = (int)j;
                         if (j <= i) break;
                     }
                 }
@@ -73,22 +64,6 @@ namespace Sudoku.ServiceLayer
 
         public Grid GenerateSudoku(Grid grid, string difficulty)
         {
-            /*Random r = new Random();
-            foreach (int i in Enumerable.Range(0, grid.Cells.Count).OrderBy(x => r.Next()))
-            {
-                for (int j = 1; j <= grid.Size; j++)
-                {
-                    if (IsValuePossible(grid, grid.Cells[i], j))
-                    {
-                        Cell regionCell = FindCellRegion(grid, grid.Cells[i]).Cells
-                            .FirstOrDefault((x => x.Coordinates == grid.Cells[i].Coordinates));
-                        regionCell.Value = j;
-
-                        grid.Cells[i].Value = j;
-                        break;
-                    }
-                }
-            }*/
             return BacktrackingAlgorithm(grid) ? grid : null;
         }
 
