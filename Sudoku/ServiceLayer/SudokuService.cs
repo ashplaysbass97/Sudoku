@@ -13,20 +13,11 @@ namespace Sudoku.ServiceLayer
             int[] dimensions = CalculateGridDimensions(size);
             int[,] values = mode == "generate" ? GenerateSudoku(size) : null;
 
-            List<Region> regions = new List<Region>();
             List<Cell> cells = new List<Cell>();
             for (int regionX = 0; regionX < dimensions[0]; regionX++)
             {
                 for (int regionY = 0; regionY < dimensions[1]; regionY++)
                 {
-                    Region region = new Region
-                    {
-                        Width = dimensions[1],
-                        Height = dimensions[0],
-                        Coordinates = new Point(regionX, regionY)
-                    };
-                    regions.Add(region);
-
                     for (int cellX = 0; cellX < dimensions[1]; cellX++)
                     {
                         for (int cellY = 0; cellY < dimensions[0]; cellY++)
@@ -35,19 +26,24 @@ namespace Sudoku.ServiceLayer
                             {
                                 Coordinates = new Point(regionX * dimensions[1] + cellX, regionY * dimensions[0] + cellY),
                                 Value = values?[regionY * dimensions[0] + cellY, regionX * dimensions[1] + cellX]
+                                Region = new Point(regionX, regionY)
                             };
                             cells.Add(cell);
-                            region.Cells.Add(cell);
                         }
                     }
                 }
             }
 
             // TODO See whether regions and cells can be created efficiently in the correct order
-            regions = regions.OrderBy(region => region.Coordinates.Y).ThenBy(region => region.Coordinates.X).ToList();
             cells = cells.OrderBy(cell => cell.Coordinates.Y).ThenBy(cell => cell.Coordinates.X).ToList();
 
-            Grid grid = new Grid(regions, cells);
+            Grid grid = new Grid
+            {
+                Size = size,
+                RegionWidth = dimensions[1],
+                RegionHeight = dimensions[0],
+                Cells = cells
+            };
             return grid;
         }
 
@@ -140,7 +136,7 @@ namespace Sudoku.ServiceLayer
 
         private bool IsValuePossible(Grid grid, Cell cell, int value)
         {
-            List<Cell> cellsInHouse = GetCellsInHouse(grid.Size, FindCellRegion(grid, cell), grid.Cells, cell);
+            List<Cell> cellsInHouse = GetCellsInHouse(grid.Size, grid.Cells, cell);
 
             foreach (Cell cellInHouse in cellsInHouse)
             {
@@ -152,23 +148,7 @@ namespace Sudoku.ServiceLayer
             return true;
         }
 
-        private Region FindCellRegion(Grid grid, Cell cell)
-        {
-            foreach (Region region in grid.Regions)
-            {
-                foreach (Cell comparison in region.Cells)
-                {
-                    if (comparison.Coordinates.Equals(cell.Coordinates))
-                    {
-                        return region;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        private List<Cell> GetCellsInHouse(int gridSize, Region region, List<Cell> cells, Cell cell)
+        private List<Cell> GetCellsInHouse(int gridSize, List<Cell> cells, Cell cell)
         {
             List<Cell> cellsInHouse = new List<Cell>();
 
@@ -188,7 +168,7 @@ namespace Sudoku.ServiceLayer
             }
 
             // Add cells in same region
-            foreach (Cell cellInHouse in region.Cells)
+            foreach (Cell cellInHouse in cells.Where(x => x.Region == cell.Region))
             {
                 if (!cellsInHouse.Contains(cellInHouse) && !cellInHouse.Equals(cell))
                 {

@@ -1,7 +1,7 @@
 ﻿<div class="container">
     @{
-        int regionWidth = Model?.Regions[0].Width ?? 3;
-        int regionHeight = Model?.Regions[0].Height ?? 3;
+        int regionWidth = Model?.RegionWidth ?? 3;
+        int regionHeight = Model?.RegionHeight ?? 3;
         for (int i = 0; i < regionWidth; i++)
         {
             <div class="row">

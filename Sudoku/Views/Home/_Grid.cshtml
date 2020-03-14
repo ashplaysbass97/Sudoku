@@ -1,8 +1,8 @@
 ﻿<table>
     @{
         int gridSize = Model?.Size ?? 9;
-        int regionWidth = Model?.Regions[0].Width ?? 3;
-        int regionHeight = Model?.Regions[0].Height ?? 3;
+        int regionWidth = Model?.RegionWidth ?? 3;
+        int regionHeight = Model?.RegionHeight ?? 3;
 
         for (int y = 0; y < gridSize; y++)
         {
