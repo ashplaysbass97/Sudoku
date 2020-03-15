@@ -106,7 +106,7 @@ namespace Sudoku.ServiceLayer
                     Random random = new Random();
                     foreach (int value in Enumerable.Range(1, gridSize).OrderBy(x => random.Next()))
                     {
-                        if (IsValuePossible(gridSize, cells, cell, value))
+                        if (IsValuePossible(cells, cell, value))
                         {
                             cell.Value = value;
                             if (BacktrackingAlgorithm(gridSize, cells, checkUniqueness))
@@ -129,48 +129,16 @@ namespace Sudoku.ServiceLayer
             return true;
         }
 
-        private bool IsValuePossible(int gridSize, List<Cell> cells, Cell cell, int value)
+        private bool IsValuePossible(List<Cell> cells, Cell cell, int value)
         {
-            List<Cell> cellsInHouse = GetCellsInHouse(gridSize, cells, cell);
-
-            foreach (Cell cellInHouse in cellsInHouse)
+            foreach (Cell cellInHouse in cells.Where(x => x.Coordinates.X == cell.Coordinates.X || x.Coordinates.Y == cell.Coordinates.Y || x.Region == cell.Region))
             {
-                if (cellInHouse.Value == value)
+                if (!cellInHouse.Equals(cell) && cellInHouse.Value == value)
                 {
                     return false;
                 }
             }
             return true;
-        }
-
-        private List<Cell> GetCellsInHouse(int gridSize, List<Cell> cells, Cell cell)
-        {
-            List<Cell> cellsInHouse = new List<Cell>();
-
-            for (int i = 0; i < gridSize; i++)
-            {
-                // Add cells in same row
-                if (i != cell.Coordinates.X)
-                {
-                    cellsInHouse.Add(cells[i + cell.Coordinates.Y * gridSize]);
-                }
-
-                // Add cells in same column
-                if (i != cell.Coordinates.Y)
-                {
-                    cellsInHouse.Add(cells[cell.Coordinates.X + i * gridSize]);
-                }
-            }
-
-            // Add cells in same region
-            foreach (Cell cellInHouse in cells.Where(x => x.Region == cell.Region))
-            {
-                if (!cellsInHouse.Contains(cellInHouse) && !cellInHouse.Equals(cell))
-                {
-                    cellsInHouse.Add(cellInHouse);
-                }
-            }
-            return cellsInHouse;
         }
     }
 }
