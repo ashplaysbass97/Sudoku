@@ -9,6 +9,7 @@ namespace Sudoku.ServiceLayer
     public class SudokuService : ISudokuService
     {
         private Grid _grid; // Actual puzzle grid
+        private List<List<Cell>> _solutions;
 
         // True values for row, grid, and region constraint matrices means that they contain that candidate
         // Inversely, true values in the cell constraint matrix means that it is a possible value for that cell
@@ -79,6 +80,7 @@ namespace Sudoku.ServiceLayer
         public Grid GenerateSudoku(Grid grid, string difficulty)
         {
             _grid = grid;
+            _solutions = new List<List<Cell>>();
             _unsolved = new List<Cell>();
             _changed = new Stack<List<Cell>>();
             _bucketList = new List<Cell>[grid.Size + 1];
@@ -93,7 +95,47 @@ namespace Sudoku.ServiceLayer
             PopulateCandidates();
 
             _steps = 1;
-            BacktrackingAlgorithm(NextCell());
+            BacktrackingAlgorithm(NextCell(), false);
+            Console.WriteLine(_steps);
+
+            Random random = new Random();
+            foreach (int i in Enumerable.Range(0, _grid.Cells.Count - 1).OrderBy(x => random.Next()))
+            {
+                List<Cell> tmp = _grid.Cells.ConvertAll(cell => new Cell
+                {
+                    Coordinates = cell.Coordinates,
+                    Region = cell.Region,
+                    Value = cell.Value
+                });
+
+                _steps = 1;
+                _grid.Cells[i].Value = null;
+                _solutions = new List<List<Cell>>();
+                _unsolved = new List<Cell>();
+                _changed = new Stack<List<Cell>>();
+                _bucketList = new List<Cell>[grid.Size + 1];
+
+                for (int j = 0; j <= _grid.Size; j++)
+                {
+                    _bucketList[j] = new List<Cell>();
+                }
+
+                InitializeConstraints();
+                InitializeMatrices();
+                PopulateCandidates();
+
+                
+                if (!BacktrackingAlgorithm(NextCell(), true) && _solutions.Count == 1)
+                {
+                    _grid.Cells = tmp;
+                    _grid.Cells[i].Value = null;
+                }
+                else
+                {
+                    _grid.Cells = tmp;
+                }
+                Console.WriteLine(_steps);
+            }
 
             return grid;
         }
@@ -101,6 +143,7 @@ namespace Sudoku.ServiceLayer
         public Grid SolveSudoku(Grid grid, int?[] sudoku)
         {
             _grid = grid;
+            _solutions = new List<List<Cell>>();
             _unsolved = new List<Cell>();
             _changed = new Stack<List<Cell>>();
             _bucketList = new List<Cell>[grid.Size + 1];
@@ -120,7 +163,8 @@ namespace Sudoku.ServiceLayer
             PopulateCandidates();
 
             _steps = 1;
-            BacktrackingAlgorithm(NextCell());
+            BacktrackingAlgorithm(NextCell(), false);
+            _grid.Cells = _solutions[0];
 
             return _grid;
         }
@@ -310,11 +354,22 @@ namespace Sudoku.ServiceLayer
             _unsolved.Add(cell);
         }
 
-        private bool BacktrackingAlgorithm(Cell nextCell)
+        private bool BacktrackingAlgorithm(Cell nextCell, bool checkUniqueness)
         {
             // If there are no more unsolved cells, the puzzle has been solved
             if (nextCell == null)
             {
+                if (checkUniqueness && !_solutions.Any())
+                {
+                    _solutions.Add(_grid.Cells.ConvertAll(cell => new Cell
+                    {
+                        Coordinates = cell.Coordinates,
+                        Region = cell.Region,
+                        Value = cell.Value
+                    }));
+                    return false;
+                }
+
                 return true;
             }
 
@@ -324,7 +379,7 @@ namespace Sudoku.ServiceLayer
                 SelectCandidate(nextCell, candidate);
 
                 // Move to the next cell. If it returns false, backtrack
-                if (BacktrackingAlgorithm(NextCell()) == false)
+                if (BacktrackingAlgorithm(NextCell(), checkUniqueness) == false)
                 {
                     ++_steps;
                     UnselectCandidate(nextCell, candidate);

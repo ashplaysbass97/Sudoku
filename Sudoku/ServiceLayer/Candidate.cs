@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Sudoku.ServiceLayer
@@ -62,18 +65,20 @@ namespace Sudoku.ServiceLayer
         {
             private int _position;
             private readonly Candidate _candidate;
+            private readonly List<int> _randomize;
 
             public CandidateEnumerator(Candidate candidate)
             {
                 _candidate = candidate;
+                _randomize = new List<int>(Enumerable.Range(1, _candidate._gridSize).OrderBy(x => Guid.NewGuid()));
                 _position = 0;
             }
 
             // Only iterates over valid candidates
             public bool MoveNext()
             {
-                ++_position;
-                return _position <= _candidate._gridSize && (_candidate[_position] || MoveNext());
+                _position++;
+                return _position <= _candidate._gridSize && (_candidate[_randomize[_position - 1]] || MoveNext());
             }
 
             public void Reset()
@@ -81,7 +86,7 @@ namespace Sudoku.ServiceLayer
                 _position = 0;
             }
 
-            public object Current => _position;
+            public object Current => _randomize[_position - 1];
         }
     }
 }
