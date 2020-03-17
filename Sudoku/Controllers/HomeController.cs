@@ -30,7 +30,7 @@ namespace Sudoku.Controllers
 
         public IActionResult SolveSudoku(int?[] sudoku)
         {
-            Grid = _sudokuService.SolveSudoku(_sudokuService.UpdateGrid(Grid, sudoku));
+            Grid = _sudokuService.SolveSudoku(Grid, sudoku);
             return PartialView("Index", Grid);
         }
     }

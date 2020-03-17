@@ -8,7 +8,19 @@ namespace Sudoku.ServiceLayer
 {
     public class SudokuService : ISudokuService
     {
-        private List<Cell> tmpSolution = null;
+        private Grid _grid; // Actual puzzle grid
+
+        // True values for row, grid, and region constraint matrices means that they contain that candidate
+        // Inversely, true values in the cell constraint matrix means that it is a possible value for that cell
+        private Candidate[,] _cellConstraintMatrix;
+        private Candidate[] _colConstraintMatrix;
+        private Candidate[] _rowConstraintMatrix;
+        private Candidate[,] _regionConstraintMatrix;
+
+        private List<Cell>[] _bucketList; // Keeps cell counts in buckets, allowing the cell with the least candidates to be selected
+        private List<Cell> _unsolved; // Helps avoid iterating over solved squares
+        private Stack<List<Cell>> _changed; // Tracks the cells changed due to propagation
+        private int _steps; // Tracks the number of steps a solution takes
 
         public Grid SetupGrid(int size, string mode)
         {
@@ -66,79 +78,264 @@ namespace Sudoku.ServiceLayer
 
         public Grid GenerateSudoku(Grid grid, string difficulty)
         {
-            BacktrackingAlgorithm(grid.Size, grid.Cells, false);
+            _grid = grid;
+            _unsolved = new List<Cell>();
+            _changed = new Stack<List<Cell>>();
+            _bucketList = new List<Cell>[grid.Size + 1];
 
-            Random random = new Random();
-            foreach (int i in Enumerable.Range(0, grid.Cells.Count - 1).OrderBy(x => random.Next()))
+            for (int i = 0; i <= _grid.Size; i++)
             {
-                tmpSolution = null;
-                List<Cell> tmp = grid.Cells.ConvertAll(x => new Cell { Coordinates = x.Coordinates, Region = x.Region, Value = x.Value });
-                tmp[i].Value = null;
-                if (!BacktrackingAlgorithm(grid.Size, tmp, true) && tmpSolution != null)
-                {
-                    grid.Cells[i].Value = null;
-                }
+                _bucketList[i] = new List<Cell>();
             }
+
+            InitializeConstraints();
+            InitializeMatrices();
+            PopulateCandidates();
+
+            _steps = 1;
+            BacktrackingAlgorithm(NextCell());
 
             return grid;
         }
 
-        public Grid UpdateGrid(Grid grid, int?[] sudoku)
+        public Grid SolveSudoku(Grid grid, int?[] sudoku)
         {
+            _grid = grid;
+            _unsolved = new List<Cell>();
+            _changed = new Stack<List<Cell>>();
+            _bucketList = new List<Cell>[grid.Size + 1];
+
             for (int i = 0; i < sudoku.Length; i++)
             {
-                grid.Cells[i].Value = sudoku[i];
+                _grid.Cells[i].Value = sudoku[i];
             }
-            return grid;
-        }
 
-        public Grid SolveSudoku(Grid grid)
-        {
-            return BacktrackingAlgorithm(grid.Size, grid.Cells, false) ? grid : null;
-        }
-
-        private bool BacktrackingAlgorithm(int gridSize, List<Cell> cells, bool checkUniqueness)
-        {
-            foreach (Cell cell in cells)
+            for (int i = 0; i <= _grid.Size; i++)
             {
-                if (cell.Value == null)
+                _bucketList[i] = new List<Cell>();
+            }
+
+            InitializeConstraints();
+            InitializeMatrices();
+            PopulateCandidates();
+
+            _steps = 1;
+            BacktrackingAlgorithm(NextCell());
+
+            return _grid;
+        }
+
+        private void InitializeConstraints()
+        {
+            _cellConstraintMatrix = new Candidate[_grid.Size, _grid.Size];
+            _rowConstraintMatrix = new Candidate[_grid.Size];
+            _colConstraintMatrix = new Candidate[_grid.Size];
+            _regionConstraintMatrix = new Candidate[_grid.RegionHeight, _grid.RegionWidth];
+
+            for (int i = 0; i < _grid.Size; i++)
+            {
+                for (int j = 0; j < _grid.Size; j++)
                 {
-                    Random random = new Random();
-                    foreach (int value in Enumerable.Range(1, gridSize).OrderBy(x => random.Next()))
+                    _cellConstraintMatrix[i, j] = new Candidate(_grid.Size, true);
+                    if (i % _grid.RegionWidth == 0 && j % _grid.RegionHeight == 0)
                     {
-                        if (IsValuePossible(cells, cell, value))
+                        _regionConstraintMatrix[i / _grid.RegionWidth, j / _grid.RegionHeight] = new Candidate(_grid.Size, false);
+                    }
+                }
+                _rowConstraintMatrix[i] = new Candidate(_grid.Size, false);
+                _colConstraintMatrix[i] = new Candidate(_grid.Size, false);
+            }
+        }
+
+        private void InitializeMatrices()
+        {
+            foreach (Cell cell in _grid.Cells)
+            {
+                // If the square is solved update the candidate list for the row, column, and region
+                if (cell.Value != null)
+                {
+                    int candidate = cell.Value ?? 0;
+                    _rowConstraintMatrix[cell.Coordinates.Y][candidate] = true;
+                    _colConstraintMatrix[cell.Coordinates.X][candidate] = true;
+                    _regionConstraintMatrix[cell.Region.X, cell.Region.Y][candidate] = true;
+                }
+            }
+        }
+
+        private void PopulateCandidates()
+        {
+            // Add possible candidates by checking the rows, columns and grid
+            foreach (Cell cell in _grid.Cells)
+            {
+                // If solved, then there are no possible candidates
+                if (cell.Value != null)
+                {
+                    _cellConstraintMatrix[cell.Coordinates.X, cell.Coordinates.Y].SetAll(false);
+                }
+                else
+                {
+                    // Populate each cell with possible candidates by checking the row, col, and grid associated with that cell
+                    foreach (int candidate in _rowConstraintMatrix[cell.Coordinates.Y])
+                    {
+                        _cellConstraintMatrix[cell.Coordinates.X, cell.Coordinates.Y][candidate] = false;
+                    }
+                    foreach (int candidate in _colConstraintMatrix[cell.Coordinates.X])
+                    {
+                        _cellConstraintMatrix[cell.Coordinates.X, cell.Coordinates.Y][candidate] = false;
+                    }
+                    foreach (int candidate in _regionConstraintMatrix[cell.Region.X, cell.Region.Y])
+                    {
+                        _cellConstraintMatrix[cell.Coordinates.X, cell.Coordinates.Y][candidate] = false;
+                    }
+
+                    _bucketList[_cellConstraintMatrix[cell.Coordinates.X, cell.Coordinates.Y].Count].Add(cell);
+                    _unsolved.Add(cell);
+                }
+            }
+        }
+
+        private Cell NextCell()
+        {
+            return _unsolved.Count == 0 ? null : (from cells in _bucketList where cells.Count > 0 select cells.First()).FirstOrDefault();
+        }
+
+        private void SelectCandidate(Cell cell, int candidate)
+        {
+            List<Cell> changedCells = new List<Cell>();
+
+            // Place candidate on grid
+            cell.Value = candidate;
+
+            // Remove from bucket list
+            _bucketList[_cellConstraintMatrix[cell.Coordinates.X, cell.Coordinates.Y].Count].Remove(cell);
+
+            // Remove candidate from cell constraint matrix
+            _cellConstraintMatrix[cell.Coordinates.X, cell.Coordinates.Y][candidate] = false;
+
+            // Add the candidate to the cell, row, col, region constraint matrices
+            _colConstraintMatrix[cell.Coordinates.X][candidate] = true;
+            _rowConstraintMatrix[cell.Coordinates.Y][candidate] = true;
+            _regionConstraintMatrix[cell.Region.X, cell.Region.Y][candidate] = true;
+
+            // Remove candidates across unsolved cells in the same row and col
+            for (int i = 0; i < _grid.Size; i++)
+            {
+                // Only change unsolved cells containing the candidate
+                if (_grid.Cells[i + cell.Coordinates.Y * _grid.Size].Value == null)
+                {
+                    if (_cellConstraintMatrix[i, cell.Coordinates.Y][candidate])
+                    {
+                        // Shift affected cells down the bucket list
+                        _bucketList[_cellConstraintMatrix[i, cell.Coordinates.Y].Count].Remove(_grid.Cells[i + cell.Coordinates.Y * _grid.Size]);
+                        _bucketList[_cellConstraintMatrix[i, cell.Coordinates.Y].Count - 1].Add(_grid.Cells[i + cell.Coordinates.Y * _grid.Size]);
+
+                        // Remove the candidate
+                        _cellConstraintMatrix[i, cell.Coordinates.Y][candidate] = false;
+
+                        // Update changed cells (for backtracking)
+                        changedCells.Add(_grid.Cells[i + cell.Coordinates.Y * _grid.Size]);
+                    }
+                }
+                // Only change unsolved cells containing the candidate
+                if (_grid.Cells[cell.Coordinates.X + i * _grid.Size].Value == null)
+                {
+                    if (_cellConstraintMatrix[cell.Coordinates.X, i][candidate])
+                    {
+                        // Shift affected cells down the bucket list
+                        _bucketList[_cellConstraintMatrix[cell.Coordinates.X, i].Count].Remove(_grid.Cells[cell.Coordinates.X + i * _grid.Size]);
+                        _bucketList[_cellConstraintMatrix[cell.Coordinates.X, i].Count - 1].Add(_grid.Cells[cell.Coordinates.X + i * _grid.Size]);
+
+                        // Remove the candidate
+                        _cellConstraintMatrix[cell.Coordinates.X, i][candidate] = false;
+
+                        // Update changed cells (for backtracking)
+                        changedCells.Add(_grid.Cells[cell.Coordinates.X + i * _grid.Size]);
+                    }
+                }
+            }
+
+            // Remove candidates across unsolved cells in the same region
+            int gridRowStart = cell.Coordinates.Y / _grid.RegionHeight * _grid.RegionHeight;
+            int gridColStart = cell.Coordinates.X / _grid.RegionWidth * _grid.RegionWidth;
+            for (int row = gridRowStart; row < gridRowStart + _grid.RegionHeight; row++)
+                for (int col = gridColStart; col < gridColStart + _grid.RegionWidth; col++)
+                    // Only change unsolved cells containing the candidate
+                    if (_grid.Cells[col + row * _grid.Size].Value == null)
+                    {
+                        if (_cellConstraintMatrix[col, row][candidate] == true)
                         {
-                            cell.Value = value;
-                            if (BacktrackingAlgorithm(gridSize, cells, checkUniqueness))
-                            {
-                                return true;
-                            }
-                            cell.Value = null;
+                            // Shift affected cells down the bucket list
+                            _bucketList[_cellConstraintMatrix[col, row].Count].Remove(_grid.Cells[col + row * _grid.Size]);
+                            _bucketList[_cellConstraintMatrix[col, row].Count - 1].Add(_grid.Cells[col + row * _grid.Size]);
+
+                            // Remove the candidate
+                            _cellConstraintMatrix[col, row][candidate] = false;
+
+                            // Update changed cells (for backtracking)
+                            changedCells.Add(_grid.Cells[col + row * _grid.Size]);
                         }
                     }
-                    return false;
-                }
-            }
 
-            if (checkUniqueness && tmpSolution == null)
-            {
-                tmpSolution = cells.ConvertAll(x => new Cell { Coordinates = x.Coordinates, Region = x.Region, Value = x.Value });
-                return false;
-            }
-
-            return true;
+            // Add cell to solved list
+            _unsolved.Remove(cell);
+            _changed.Push(changedCells);
         }
 
-        private bool IsValuePossible(List<Cell> cells, Cell cell, int value)
+        private void UnselectCandidate(Cell cell, int candidate)
         {
-            foreach (Cell cellInHouse in cells.Where(x => x.Coordinates.X == cell.Coordinates.X || x.Coordinates.Y == cell.Coordinates.Y || x.Region == cell.Region))
+            // Remove selected candidate from grid
+            cell.Value = null;
+
+            // Add that candidate back to the cell constraint matrix
+            _cellConstraintMatrix[cell.Coordinates.X, cell.Coordinates.Y][candidate] = true;
+
+            // Put cell back in the bucket list
+            _bucketList[_cellConstraintMatrix[cell.Coordinates.X, cell.Coordinates.Y].Count].Add(cell);
+
+            // Remove the candidate from the row, col, and region constraint matrices
+            _rowConstraintMatrix[cell.Coordinates.Y][candidate] = false;
+            _colConstraintMatrix[cell.Coordinates.X][candidate] = false;
+            _regionConstraintMatrix[cell.Region.X, cell.Region.Y][candidate] = false;
+
+            // Add the candidate back to any cells that changed from its selection
+            foreach (Cell c in _changed.Pop())
             {
-                if (!cellInHouse.Equals(cell) && cellInHouse.Value == value)
-                {
-                    return false;
-                }
+                // Shift affected cells up the bucket list
+                _bucketList[_cellConstraintMatrix[c.Coordinates.X, c.Coordinates.Y].Count].Remove(c);
+                _bucketList[_cellConstraintMatrix[c.Coordinates.X, c.Coordinates.Y].Count + 1].Add(c);
+                _cellConstraintMatrix[c.Coordinates.X, c.Coordinates.Y][candidate] = true;
             }
-            return true;
+
+            // Add the cell back to the list of unsolved
+            _unsolved.Add(cell);
+        }
+
+        private bool BacktrackingAlgorithm(Cell nextCell)
+        {
+            // If there are no more unsolved cells, the puzzle has been solved
+            if (nextCell == null)
+            {
+                return true;
+            }
+
+            // Loop through all candidates in the cell
+            foreach (int candidate in _cellConstraintMatrix[nextCell.Coordinates.X, nextCell.Coordinates.Y])
+            {
+                SelectCandidate(nextCell, candidate);
+
+                // Move to the next cell. If it returns false, backtrack
+                if (BacktrackingAlgorithm(NextCell()) == false)
+                {
+                    ++_steps;
+                    UnselectCandidate(nextCell, candidate);
+                    continue;
+                }
+                // If we receive true here this means the puzzle was solved earlier
+                return true;
+            }
+
+            // Return false if path is unsolvable
+            return false;
         }
     }
 }

@@ -7,7 +7,6 @@ namespace Sudoku.ServiceLayer
     {
         Grid SetupGrid(int size, string mode);
         Grid GenerateSudoku(Grid grid, string difficulty);
-        Grid UpdateGrid(Grid grid, int?[] sudoku);
-        Grid SolveSudoku(Grid grid);
+        Grid SolveSudoku(Grid grid, int?[] sudoku);
     }
 }
