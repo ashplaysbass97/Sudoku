@@ -23,6 +23,20 @@ namespace Sudoku.ServiceLayer
         private Stack<List<Cell>> _changed; // Tracks the cells changed due to propagation
         private int _steps; // Tracks the number of steps a solution takes
 
+        private const int MaximumSteps = 10000;
+        private readonly Dictionary<int, Dictionary<string, int>> _difficultySettings = new Dictionary<int, Dictionary<string, int>>
+        {
+            {4, new Dictionary<string, int>{{"Easy", 9}, {"Medium", 10}, {"Hard", 11}, {"Expert", 12}}},
+            {6, new Dictionary<string, int>{{"Easy", 21}, {"Medium", 23}, {"Hard", 25}, {"Expert", 27}}},
+            {8, new Dictionary<string, int>{{"Easy", 36}, {"Medium", 40}, {"Hard", 44}, {"Expert", 48}}},
+            {9, new Dictionary<string, int>{{"Easy", 42}, {"Medium", 48}, {"Hard", 54}, {"Expert", 60}}},
+            {10, new Dictionary<string, int>{{"Easy", 50}, {"Medium", 57}, {"Hard", 64}, {"Expert", 71}}},
+            {12, new Dictionary<string, int>{{"Easy", 71}, {"Medium", 80}, {"Hard", 89}, {"Expert", 98}}},
+            {14, new Dictionary<string, int>{{"Easy", 84}, {"Medium", 95}, {"Hard", 106}, {"Expert", 117}}},
+            {15, new Dictionary<string, int>{{"Easy", 94}, {"Medium", 107}, {"Hard", 120}, {"Expert", 133}}},
+            {16, new Dictionary<string, int>{{"Easy", 106}, {"Medium", 121}, {"Hard", 136}, {"Expert", 151}}}
+        };
+
         public Grid SetupGrid(int size, string mode)
         {
             int[] regionSize = CalculateRegionSize(size);
@@ -79,6 +93,8 @@ namespace Sudoku.ServiceLayer
 
         public Grid GenerateSudoku(Grid grid, string difficulty)
         {
+            int removedCellsCount = 0;
+            
             _grid = grid;
             _solutions = new List<List<Cell>>();
             _unsolved = new List<Cell>();
@@ -96,10 +112,9 @@ namespace Sudoku.ServiceLayer
 
             _steps = 1;
             BacktrackingAlgorithm(NextCell(), false);
-            Console.WriteLine(_steps);
 
             Random random = new Random();
-            foreach (int i in Enumerable.Range(0, _grid.Cells.Count - 1).OrderBy(x => random.Next()))
+            foreach (int i in Enumerable.Range(0, _grid.Cells.Count).OrderBy(x => random.Next()))
             {
                 List<Cell> tmp = _grid.Cells.ConvertAll(cell => new Cell
                 {
@@ -124,17 +139,18 @@ namespace Sudoku.ServiceLayer
                 InitializeMatrices();
                 PopulateCandidates();
 
-                
                 if (!BacktrackingAlgorithm(NextCell(), true) && _solutions.Count == 1)
                 {
                     _grid.Cells = tmp;
                     _grid.Cells[i].Value = null;
+                    removedCellsCount++;
                 }
                 else
                 {
                     _grid.Cells = tmp;
                 }
-                Console.WriteLine(_steps);
+
+                if (_steps >= MaximumSteps || removedCellsCount >= _difficultySettings[_grid.Size][difficulty]) break;
             }
 
             return grid;
@@ -356,21 +372,20 @@ namespace Sudoku.ServiceLayer
 
         private bool BacktrackingAlgorithm(Cell nextCell, bool checkUniqueness)
         {
+            // Stop checking for uniqueness if the defined maximum number of steps has been reached
+            if (checkUniqueness && _steps >= MaximumSteps) return false;
+
             // If there are no more unsolved cells, the puzzle has been solved
             if (nextCell == null)
             {
-                if (checkUniqueness && !_solutions.Any())
+                if (!checkUniqueness || _solutions.Any()) return true;
+                _solutions.Add(_grid.Cells.ConvertAll(cell => new Cell
                 {
-                    _solutions.Add(_grid.Cells.ConvertAll(cell => new Cell
-                    {
-                        Coordinates = cell.Coordinates,
-                        Region = cell.Region,
-                        Value = cell.Value
-                    }));
-                    return false;
-                }
-
-                return true;
+                    Coordinates = cell.Coordinates,
+                    Region = cell.Region,
+                    Value = cell.Value
+                }));
+                return false;
             }
 
             // Loop through all candidates in the cell
@@ -379,14 +394,9 @@ namespace Sudoku.ServiceLayer
                 SelectCandidate(nextCell, candidate);
 
                 // Move to the next cell. If it returns false, backtrack
-                if (BacktrackingAlgorithm(NextCell(), checkUniqueness) == false)
-                {
-                    ++_steps;
-                    UnselectCandidate(nextCell, candidate);
-                    continue;
-                }
-                // If we receive true here this means the puzzle was solved earlier
-                return true;
+                if (BacktrackingAlgorithm(NextCell(), checkUniqueness)) return true;
+                ++_steps;
+                UnselectCandidate(nextCell, candidate);
             }
 
             // Return false if path is unsolvable
