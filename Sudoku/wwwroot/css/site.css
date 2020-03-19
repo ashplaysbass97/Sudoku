@@ -4,47 +4,44 @@
 
 #grid {
     padding: 0;
+    width: 100%;
+    max-width: 100vmin;
+    margin-left: auto;
+    margin-right: auto;
+}
+  
+.board {
+    width: 100%;
+    min-width: 400px;
+    max-width: 800px;
+    display: flex;
+    flex-flow: row wrap;
     border: 2px solid black;
+    font-family: sans-serif;
+    margin-left: auto;
+    margin-right: auto;
 }
-
-table {
-    width: 100%;
-}
-
-td {
-    position: relative;
-}
-
-td:after {
-    content: '';
-    display: block;
-    margin-top: 100%;
-}
-
-td .content {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
+  
+.cell {
+    box-sizing: border-box;
     border: 1px solid black;
     text-align: center;
+    cursor: default;
 }
 
-td .top {
+.top {
     border-top-width: 2px;
 }
 
-td .bottom {
+.bottom {
     border-bottom-width: 2px;
 }
 
-td .left {
+.left {
     border-left-width: 2px;
 }
 
-td .right {
+.right {
     border-right-width: 2px;
 }
 

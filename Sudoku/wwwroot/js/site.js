@@ -8,12 +8,12 @@ $(function () {
     var modeValue = $("input[name='mode']:checked").val();
 
     // Set the max and default value for the slider
-    slider.attr('max', sizes.length - 1);
+    slider.attr("max", sizes.length - 1);
     slider.val(3);
     size.text("Size: 9x9");
 
     // Update the size label when the slider changes
-    slider.on('input', function () {
+    slider.on("input", function () {
         size.text("Size: " + sizes[this.value] + "x" + sizes[this.value]);
     });
 
@@ -32,7 +32,7 @@ $(function () {
             type: "POST",
             data: {
                 "difficulty": $("#difficulty").val(),
-                "size": size.text().substring(5, size.text().length).split('x')[0],
+                "size": size.text().substring(5, size.text().length).split("x")[0],
                 "mode": modeValue
             },
             success: function(result) {
@@ -44,12 +44,16 @@ $(function () {
                 } else {
                     $("#submit").attr("onclick", "solveSudoku()");
                 }
+                setCellSize();
             },
             error: function() {
                 alert("error");
             }
         });
     });
+
+    setCellSize();
+    window.addEventListener("resize", setCellSize);
 });
 
 function solveSudoku() {
@@ -68,7 +72,6 @@ function solveSudoku() {
     });
 }
 
-// Ideally, this should return a two dimensional array but am having difficulties passing it to the controller
 function getGrid() {
     var cells = $("#grid :input");
     var size = cells.length;
@@ -79,6 +82,19 @@ function getGrid() {
     }
     return grid;
 }
+
+function setCellSize() {
+    window.requestAnimationFrame(() => {
+        var width = document.querySelector(".cell").clientWidth;
+        document.querySelectorAll(".cell").forEach((tile) => {
+            if (tile.clientHeight !== width) {
+                tile.style.height = width + "px";
+                tile.style.fontSize = width * 0.75 + "px";
+                tile.style.lineHeight = width + "px";
+            }
+        });
+    });
+};
 
 function startTimer() {
     if (!timer) {
