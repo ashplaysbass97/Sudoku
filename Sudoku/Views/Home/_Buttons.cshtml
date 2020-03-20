@@ -8,7 +8,7 @@
                 @for (int j = 1; j <= regionHeight; j++)
                 {
                 <div class="col">
-                    <button type="button" class="btn btn-secondary btn-lg btn-block">@(i * regionHeight + j)</button>
+                    <button type="button" class="btn btn-secondary btn-lg btn-block" id="keypadButton@(i * regionHeight + j)" disabled>@(i * regionHeight + j)</button>
                 </div>
                 }
             </div>
@@ -17,24 +17,24 @@
     <hr/>
     <div class="row">
         <div class="col">
-            <button type="button" class="btn btn-secondary btn-lg btn-block">Notes</button>
+            <button type="button" class="btn btn-secondary btn-lg btn-block" id="notesButton" disabled>Notes</button>
         </div>
         <div class="col">
-            <button type="button" class="btn btn-secondary btn-lg btn-block">Hint</button>
+            <button type="button" class="btn btn-secondary btn-lg btn-block" id="hintButton" disabled>Hint</button>
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <button type="button" class="btn btn-secondary btn-lg btn-block">Undo</button>
+            <button type="button" class="btn btn-secondary btn-lg btn-block" id="undoButton" disabled>Undo</button>
         </div>
         <div class="col">
-            <button type="button" class="btn btn-secondary btn-lg btn-block">Erase</button>
+            <button type="button" class="btn btn-secondary btn-lg btn-block" id="eraseButton" disabled>Erase</button>
         </div>
     </div>
     <hr/>
     <div class="row">
         <div class="col">
-            <button type="button" class="btn btn-success btn-lg btn-block" id="submit">Submit</button>
+            <button type="button" class="btn btn-success btn-lg btn-block" id="submitButton" disabled>Submit</button>
         </div>
     </div>
 </div>

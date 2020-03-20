@@ -39,12 +39,13 @@ $(function () {
                 $("#body").html(result);
                 resetTimer();
                 if (modeValue === "generate") {
-                    $("#submit").attr("onclick", "submitSudoku()");
+                    $("#submitButton").attr("onclick", "submitSudoku()");
                     startTimer();
                 } else {
-                    $("#submit").attr("onclick", "solveSudoku()");
+                    $("#submitButton").attr("onclick", "solveSudoku()");
                 }
                 setCellSize();
+                toggleButtons(modeValue);
             },
             error: function() {
                 alert("error");
@@ -95,6 +96,15 @@ function setCellSize() {
         });
     });
 };
+
+function toggleButtons(mode) {
+    $('[id^="keypadButton"]').attr("disabled", false);
+    $("#notesButton").attr("disabled", mode === "solve");
+    $("#hintButton").attr("disabled", mode === "solve");
+    $("#undoButton").attr("disabled", false);
+    $("#eraseButton").attr("disabled", false);
+    $("#submitButton").attr("disabled", false);
+}
 
 function startTimer() {
     if (!timer) {
