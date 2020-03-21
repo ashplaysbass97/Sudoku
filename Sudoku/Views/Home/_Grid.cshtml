@@ -30,7 +30,7 @@
                     classes += " right";
                 }
                     
-                <div class="cell @classes" id="@x,@y" style="flex-basis: calc(100% / @gridSize)">
+                <div class="cell @classes" id="@x,@y" data-x="@x" data-y="@y" data-region="@(x / regionWidth),@(y / regionHeight)" style="flex-basis: calc(100% / @gridSize)">
                     @Model?.Cells[x + y * gridSize].Value
                 </div>
             }

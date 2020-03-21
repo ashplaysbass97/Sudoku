@@ -29,6 +29,14 @@
     cursor: default;
 }
 
+.selected {
+    background-color: #e3e3e3;
+}
+
+.highlighted {
+    background-color: #f0f0f0;
+}
+
 .top {
     border-top-width: 2px;
 }

@@ -46,6 +46,7 @@ $(function () {
                 }
                 setCellSize();
                 toggleButtons(modeValue);
+                eventListeners();
             },
             error: function() {
                 alert("error");
@@ -96,6 +97,47 @@ function setCellSize() {
         });
     });
 };
+
+function eventListeners() {
+    $(".cell").each(function() {
+        $(this).on({
+            mouseenter: function () {
+                if (!$(this).hasClass("selected")) {
+                    if ($(this).hasClass("highlighted")) {
+                        $(this).css("background-color", "#e3e3e3");
+                    } else {
+                        $(this).css("background-color", "#f0f0f0");
+                    }
+                }
+            },
+            mouseleave: function () {
+                $(this).css("background-color", "");
+            },
+            click: function () {
+                // Get the details of the selected cell
+                var id = $(this).attr("id");
+                var x = $(this).data("x");
+                var y = $(this).data("y");
+                var region = $(this).data("region");
+
+                // Set the background colours for each cell
+                $(".cell").each(function () {
+                    if ($(this).attr("id") === id) {
+                        $(this).removeClass("highlighted");
+                        $(this).addClass("selected");
+                        $(this).css("background-color", "#e3e3e3");
+                    } else if ($(this).data("x") === x || $(this).data("y") === y || $(this).data("region") === region) {
+                        $(this).removeClass("selected");
+                        $(this).addClass("highlighted");
+                    } else {
+                        $(this).removeClass("selected");
+                        $(this).removeClass("highlighted");
+                    }
+                });
+            }
+        });
+    });
+}
 
 function toggleButtons(mode) {
     $('[id^="keypadButton"]').attr("disabled", false);
