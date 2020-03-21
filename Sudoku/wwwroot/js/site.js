@@ -150,6 +150,16 @@ function eventListeners() {
             }
         });
     });
+
+    // Add an event listener for the erase button
+    $("#eraseButton").click(function () {
+        if ($(".selected").length > 0) {
+            var selectedCell = $(".selected")[0];
+            if ($(selectedCell).data("editable") === "True") {
+                $(selectedCell).text("");
+            }
+        }
+    });
 }
 
 function toggleButtons(mode) {
