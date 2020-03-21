@@ -99,6 +99,7 @@ function setCellSize() {
 };
 
 function eventListeners() {
+    // Add event listeners for the cells
     $(".cell").each(function() {
         $(this).on({
             mouseenter: function () {
@@ -137,10 +138,22 @@ function eventListeners() {
             }
         });
     });
+
+    // Add event listeners for the keypad
+    $("[id^='keypadButton']").each(function () {
+        $(this).click(function() {
+            if ($(".selected").length > 0) {
+                var selectedCell = $(".selected")[0];
+                if ($(selectedCell).data("editable") === "True") {
+                    $(selectedCell).text($(this).text());
+                }
+            }
+        });
+    });
 }
 
 function toggleButtons(mode) {
-    $('[id^="keypadButton"]').attr("disabled", false);
+    $("[id^='keypadButton']").attr("disabled", false);
     $("#notesButton").attr("disabled", mode === "solve");
     $("#hintButton").attr("disabled", mode === "solve");
     $("#undoButton").attr("disabled", false);
