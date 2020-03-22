@@ -146,6 +146,7 @@ function eventListeners() {
                 var selectedCell = $(".selected")[0];
                 if ($(selectedCell).data("editable") === "True") {
                     $(selectedCell).text($(this).text());
+                    invalidCellsCheck();
                 }
             }
         });
@@ -157,7 +158,37 @@ function eventListeners() {
             var selectedCell = $(".selected")[0];
             if ($(selectedCell).data("editable") === "True") {
                 $(selectedCell).text("");
+                invalidCellsCheck();
             }
+        }
+    });
+}
+
+function invalidCellsCheck() {
+    $(".cell").each(function () {
+        var cell = $(this);
+        var invalid = false;
+
+        // Remove existing bootstrap text classes
+        $(cell).removeClass(function (index, className) {
+            return (className.match(/(^|\s)text-\S+/g) || []).join(" ");
+        });
+
+        // Check whether cell value is invalid
+        $(".cell").each(function () {
+            invalid = $(this).attr("id") !== $(cell).attr("id") &&
+                $(this).text() === $(cell).text() &&
+                ($(this).data("region") === $(cell).data("region") ||
+                    $(this).data("x") === $(cell).data("x") ||
+                    $(this).data("y") === $(cell).data("y"));
+            return !invalid;
+        });
+
+        // Add appropriate bootstrap text class
+        if (invalid) {
+            $(cell).addClass("text-danger");
+        } else if ($(cell).data("editable") === "True") {
+            (cell).addClass("text-primary");
         }
     });
 }
