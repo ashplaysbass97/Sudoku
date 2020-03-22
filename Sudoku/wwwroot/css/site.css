@@ -37,6 +37,14 @@
     background-color: #f0f0f0;
 }
 
+.invalid {
+    background-color: #ff847d;
+}
+
+.selected.invalid {
+    background-color: #ff4136;
+}
+
 .top {
     border-top-width: 2px;
 }

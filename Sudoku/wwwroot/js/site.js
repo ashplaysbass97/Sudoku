@@ -104,7 +104,9 @@ function eventListeners() {
         $(this).on({
             mouseenter: function () {
                 if (!$(this).hasClass("selected")) {
-                    if ($(this).hasClass("highlighted")) {
+                    if ($(this).hasClass("invalid")) {
+                        $(this).css("background-color", "#ff4136");
+                    } else if ($(this).hasClass("highlighted")) {
                         $(this).css("background-color", "#e3e3e3");
                     } else {
                         $(this).css("background-color", "#f0f0f0");
@@ -114,27 +116,8 @@ function eventListeners() {
             mouseleave: function () {
                 $(this).css("background-color", "");
             },
-            click: function () {
-                // Get the details of the selected cell
-                var id = $(this).attr("id");
-                var x = $(this).data("x");
-                var y = $(this).data("y");
-                var region = $(this).data("region");
-
-                // Set the background colours for each cell
-                $(".cell").each(function () {
-                    if ($(this).attr("id") === id) {
-                        $(this).removeClass("highlighted");
-                        $(this).addClass("selected");
-                        $(this).css("background-color", "#e3e3e3");
-                    } else if ($(this).data("x") === x || $(this).data("y") === y || $(this).data("region") === region) {
-                        $(this).removeClass("selected");
-                        $(this).addClass("highlighted");
-                    } else {
-                        $(this).removeClass("selected");
-                        $(this).removeClass("highlighted");
-                    }
-                });
+            click: function() {
+                cellHighlighting(this);
             }
         });
     });
@@ -146,6 +129,7 @@ function eventListeners() {
                 var selectedCell = $(".selected")[0];
                 if ($(selectedCell).data("editable") === "True") {
                     $(selectedCell).text($(this).text());
+                    cellHighlighting(selectedCell);
                     invalidCellsCheck();
                 }
             }
@@ -158,7 +142,55 @@ function eventListeners() {
             var selectedCell = $(".selected")[0];
             if ($(selectedCell).data("editable") === "True") {
                 $(selectedCell).text("");
+                cellHighlighting(selectedCell);
                 invalidCellsCheck();
+            }
+        }
+    });
+}
+
+function cellHighlighting(selectedCell) {
+    var invalidRegion = false;
+    var invalidColumn = false;
+    var invalidRow = false;
+
+    // Check whether the region, column, or row of the selected cell is invalid
+    if ($(selectedCell).text() !== "") {
+        $(".cell").each(function () {
+            if ($(this).attr("id") === $(selectedCell).attr("id") || $(this).text() !== $(selectedCell).text()) return true;
+            if ($(this).data("region") === $(selectedCell).data("region")) {
+                invalidRegion = true;
+            } else if ($(this).data("x") === $(selectedCell).data("x")) {
+                invalidColumn = true;
+            } else if ($(this).data("y") === $(selectedCell).data("y")) {
+                invalidRow = true;
+            }
+        });
+    }
+
+    $(".cell").each(function () {
+        // Remove existing background-color classes
+        $(this).css("background-color", "");
+        $(this).removeClass("highlighted selected invalid");
+
+        // Add appropriate classes to the selected cell
+        if ($(this).attr("id") === $(selectedCell).attr("id")) {
+            $(this).addClass("selected");
+            if ($(selectedCell).text() === "") return true;
+            if (invalidRegion || invalidColumn || invalidRow) {
+                $(this).addClass("invalid");
+            }
+
+        // Add appropriate classes to cells in the same region, column, or row as the selected cell
+        } else if ($(this).data("region") === $(selectedCell).data("region") ||
+            $(this).data("x") === $(selectedCell).data("x") ||
+            $(this).data("y") === $(selectedCell).data("y")) {
+            $(this).addClass("highlighted");
+            if ($(selectedCell).text() === "") return true;
+            if ((invalidRegion && $(this).data("region") === $(selectedCell).data("region")) ||
+                (invalidColumn && $(this).data("x") === $(selectedCell).data("x")) ||
+                (invalidRow && $(this).data("y") === $(selectedCell).data("y"))) {
+                $(this).addClass("invalid");
             }
         }
     });
@@ -174,7 +206,7 @@ function invalidCellsCheck() {
             return (className.match(/(^|\s)text-\S+/g) || []).join(" ");
         });
 
-        // Check whether cell value is invalid
+        // Check whether the cell is invalid
         $(".cell").each(function () {
             invalid = $(this).attr("id") !== $(cell).attr("id") &&
                 $(this).text() === $(cell).text() &&
