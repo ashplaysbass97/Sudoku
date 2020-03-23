@@ -36,7 +36,7 @@
                     classes += " text-primary";
                 }
 
-                <div class="@classes" id="@x,@y" data-x="@x" data-y="@y" data-region="@(x / regionWidth),@(y / regionHeight)" data-editable="@editable" style="flex-basis: calc(100% / @gridSize); cursor: @(editable ? "text" : "default")">@Model?.Cells[x + y * gridSize].Value</div>
+                <div class="@classes" data-x="@x" data-y="@y" data-region="@(x / regionWidth),@(y / regionHeight)" data-editable="@editable" data-solution="@Model?.Cells[x + y * gridSize].Solution" style="flex-basis: calc(100% / @gridSize); cursor: @(editable ? "text" : "default")">@Model?.Cells[x + y * gridSize].Value</div>
             }
         }
     }

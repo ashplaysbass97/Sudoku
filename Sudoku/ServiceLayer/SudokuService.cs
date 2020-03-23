@@ -112,6 +112,10 @@ namespace Sudoku.ServiceLayer
 
             _steps = 1;
             BacktrackingAlgorithm(NextCell(), false);
+            foreach (Cell cell in _grid.Cells)
+            {
+                cell.Solution = cell.Value ?? 0;
+            }
 
             Random random = new Random();
             foreach (int i in Enumerable.Range(0, _grid.Cells.Count).OrderBy(x => random.Next()))
@@ -120,7 +124,8 @@ namespace Sudoku.ServiceLayer
                 {
                     Coordinates = cell.Coordinates,
                     Region = cell.Region,
-                    Value = cell.Value
+                    Value = cell.Value,
+                    Solution = cell.Solution
                 });
 
                 _steps = 1;

@@ -8,12 +8,13 @@ namespace Sudoku.ServiceLayer
         public Point Coordinates { get; set; }
         public Point Region { get; set; }
         public int? Value { get; set; }
+        public int Solution { get; set; }
 
         public bool Equals(Cell other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Coordinates.Equals(other.Coordinates) && Region.Equals(other.Region) && Value == other.Value;
+            return Coordinates.Equals(other.Coordinates) && Region.Equals(other.Region) && Value == other.Value && Solution == other.Solution;
         }
 
         public override bool Equals(object obj)
@@ -26,7 +27,7 @@ namespace Sudoku.ServiceLayer
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Coordinates, Region, Value);
+            return HashCode.Combine(Coordinates, Region, Value, Solution);
         }
     }
 }

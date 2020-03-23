@@ -2,7 +2,7 @@
 var timer;
 var undoStack = new Array();
 
-$(function () {
+$(function() {
     var slider = $("#slider");
     var size = $("#size");
     var sizes = [4, 6, 8, 9, 10, 12, 14, 15, 16];
@@ -14,7 +14,7 @@ $(function () {
     size.text("Size: 9x9");
 
     // Update the size label when the slider changes
-    slider.on("input", function () {
+    slider.on("input", function() {
         size.text("Size: " + sizes[this.value] + "x" + sizes[this.value]);
     });
 
@@ -67,10 +67,10 @@ function solveSudoku() {
         data: {
             "sudoku": getGrid()
         },
-        success: function (result) {
+        success: function(result) {
             $("#body").html(result);
         },
-        error: function (error) {
+        error: function(error) {
             console.log(error);
         }
     });
@@ -104,7 +104,7 @@ function eventListeners() {
     // Add event listeners for the cells
     $(".cell").each(function() {
         $(this).on({
-            mouseenter: function () {
+            mouseenter: function() {
                 if (!$(this).hasClass("selected")) {
                     if ($(this).hasClass("invalid")) {
                         $(this).css("background-color", "#ffb4a9");
@@ -115,10 +115,10 @@ function eventListeners() {
                     }
                 }
             },
-            mouseleave: function () {
+            mouseleave: function() {
                 $(this).css("background-color", "");
             },
-            click: function () {
+            click: function() {
                 cellHighlighting(this);
                 toggleButtons();
             }
@@ -126,20 +126,26 @@ function eventListeners() {
     });
 
     // Add event listeners for the keypad
-    $("[id^='keypadButton']").each(function () {
-        $(this).click(function () {
+    $("[id^='keypadButton']").each(function() {
+        $(this).click(function() {
             updateCell($(this).text());
         });
     });
 
-    // Add an event listener for the erase button
-    $("#eraseButton").click(function () {
-        updateCell("");
+    // Add an event listener for the hint button
+    $("#hintButton").click(function () {
+        var selectedCell = $(".selected")[0];
+        updateCell($(selectedCell).data("solution"));
     });
 
     // Add an event listener for the undo button
-    $("#undoButton").click(function() {
+    $("#undoButton").click(function () {
         undo();
+    });
+
+    // Add an event listener for the erase button
+    $("#eraseButton").click(function() {
+        updateCell("");
     });
 }
 
@@ -161,8 +167,8 @@ function cellHighlighting(selectedCell) {
 
     // Check whether the region, column, or row of the selected cell is invalid
     if ($(selectedCell).text() !== "") {
-        $(".cell").each(function () {
-            if ($(this).attr("id") === $(selectedCell).attr("id") || $(this).text() !== $(selectedCell).text()) return true;
+        $(".cell").each(function() {
+            if (this === selectedCell || $(this).text() !== $(selectedCell).text()) return true;
             if ($(this).data("region") === $(selectedCell).data("region")) {
                 invalidRegion = true;
             } else if ($(this).data("x") === $(selectedCell).data("x")) {
@@ -173,13 +179,13 @@ function cellHighlighting(selectedCell) {
         });
     }
 
-    $(".cell").each(function () {
+    $(".cell").each(function() {
         // Remove existing background-color classes
         $(this).css("background-color", "");
         $(this).removeClass("highlighted selected invalid");
 
         // Add appropriate classes to the selected cell
-        if ($(this).attr("id") === $(selectedCell).attr("id")) {
+        if (this === selectedCell) {
             $(this).addClass("selected");
             if ($(selectedCell).text() === "") return true;
             if (invalidRegion || invalidColumn || invalidRow) {
@@ -202,18 +208,18 @@ function cellHighlighting(selectedCell) {
 }
 
 function invalidCellsCheck() {
-    $(".cell").each(function () {
-        var cell = $(this);
+    $(".cell").each(function() {
+        var cell = this;
         var invalid = false;
 
         // Remove existing bootstrap text classes
-        $(cell).removeClass(function (index, className) {
+        $(cell).removeClass(function(index, className) {
             return (className.match(/(^|\s)text-\S+/g) || []).join(" ");
         });
 
         // Check whether the cell is invalid
         $(".cell").each(function () {
-            invalid = $(this).attr("id") !== $(cell).attr("id") &&
+            invalid = this !== cell &&
                 $(this).text() === $(cell).text() &&
                 ($(this).data("region") === $(cell).data("region") ||
                     $(this).data("x") === $(cell).data("x") ||
@@ -225,7 +231,7 @@ function invalidCellsCheck() {
         if (invalid) {
             $(cell).addClass("text-danger");
         } else if ($(cell).data("editable") === "True") {
-            (cell).addClass("text-primary");
+            $(cell).addClass("text-primary");
         }
     });
 }
