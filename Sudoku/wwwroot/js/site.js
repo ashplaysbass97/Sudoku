@@ -105,11 +105,11 @@ function eventListeners() {
             mouseenter: function () {
                 if (!$(this).hasClass("selected")) {
                     if ($(this).hasClass("invalid")) {
-                        $(this).css("background-color", "#ff4136");
+                        $(this).css("background-color", "#ffb4a9");
                     } else if ($(this).hasClass("highlighted")) {
-                        $(this).css("background-color", "#e3e3e3");
+                        $(this).css("background-color", "#bbb");
                     } else {
-                        $(this).css("background-color", "#f0f0f0");
+                        $(this).css("background-color", "#e1e1e1");
                     }
                 }
             },

@@ -30,19 +30,19 @@
 }
 
 .selected {
-    background-color: #e3e3e3;
+    background-color: #bbb;
 }
 
 .highlighted {
-    background-color: #f0f0f0;
+    background-color: #e1e1e1;
 }
 
 .invalid {
-    background-color: #ff847d;
+    background-color: #ffdacf;
 }
 
 .selected.invalid {
-    background-color: #ff4136;
+    background-color: #ffb4a9;
 }
 
 .top {
