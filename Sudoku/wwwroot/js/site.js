@@ -1,5 +1,6 @@
 ﻿var seconds = 0, minutes = 0;
 var timer;
+var undoStack = new Array();
 
 $(function () {
     var slider = $("#slider");
@@ -40,12 +41,13 @@ $(function () {
                 resetTimer();
                 if (modeValue === "generate") {
                     $("#submitButton").attr("onclick", "submitSudoku()");
+                    $("#notesButton").attr("disabled", false);
                     startTimer();
                 } else {
                     $("#submitButton").attr("onclick", "solveSudoku()");
                 }
+                $("#submitButton").attr("disabled", false);
                 setCellSize();
-                toggleButtons(modeValue);
                 eventListeners();
             },
             error: function() {
@@ -116,37 +118,40 @@ function eventListeners() {
             mouseleave: function () {
                 $(this).css("background-color", "");
             },
-            click: function() {
+            click: function () {
                 cellHighlighting(this);
+                toggleButtons();
             }
         });
     });
 
     // Add event listeners for the keypad
     $("[id^='keypadButton']").each(function () {
-        $(this).click(function() {
-            if ($(".selected").length > 0) {
-                var selectedCell = $(".selected")[0];
-                if ($(selectedCell).data("editable") === "True") {
-                    $(selectedCell).text($(this).text());
-                    cellHighlighting(selectedCell);
-                    invalidCellsCheck();
-                }
-            }
+        $(this).click(function () {
+            updateCell($(this).text());
         });
     });
 
     // Add an event listener for the erase button
     $("#eraseButton").click(function () {
-        if ($(".selected").length > 0) {
-            var selectedCell = $(".selected")[0];
-            if ($(selectedCell).data("editable") === "True") {
-                $(selectedCell).text("");
-                cellHighlighting(selectedCell);
-                invalidCellsCheck();
-            }
-        }
+        updateCell("");
     });
+
+    // Add an event listener for the undo button
+    $("#undoButton").click(function() {
+        undo();
+    });
+}
+
+function updateCell(value) {
+    var selectedCell = $(".selected")[0];
+    if ($(selectedCell).data("editable") === "True") {
+        undoStack.push([selectedCell, $(selectedCell).text()]);
+        $(selectedCell).text(value);
+        cellHighlighting(selectedCell);
+        invalidCellsCheck();
+        toggleButtons();
+    }
 }
 
 function cellHighlighting(selectedCell) {
@@ -225,13 +230,20 @@ function invalidCellsCheck() {
     });
 }
 
-function toggleButtons(mode) {
-    $("[id^='keypadButton']").attr("disabled", false);
-    $("#notesButton").attr("disabled", mode === "solve");
-    $("#hintButton").attr("disabled", mode === "solve");
-    $("#undoButton").attr("disabled", false);
-    $("#eraseButton").attr("disabled", false);
-    $("#submitButton").attr("disabled", false);
+function toggleButtons() {
+    var selectedCell = $(".selected")[0];
+    $("[id^='keypadButton']").attr("disabled", $(selectedCell).data("editable") === "False");
+    $("#hintButton").attr("disabled", $(selectedCell).data("editable") === "False");
+    $("#eraseButton").attr("disabled", $(selectedCell).data("editable") === "False");
+    $("#undoButton").attr("disabled", undoStack.length === 0);
+}
+
+function undo() {
+    var lastAction = undoStack.pop();
+    $(lastAction[0]).text(lastAction[1]);
+    cellHighlighting($(".selected")[0]);
+    invalidCellsCheck();
+    toggleButtons();
 }
 
 function startTimer() {
