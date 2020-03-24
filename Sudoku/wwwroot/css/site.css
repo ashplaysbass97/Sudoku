@@ -82,3 +82,7 @@
 #playButton, #pauseButton {
     cursor: pointer;
 }
+
+#alertContainer {
+    padding: 15px;
+}

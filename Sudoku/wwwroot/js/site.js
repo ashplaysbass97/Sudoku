@@ -60,20 +60,48 @@ $(function() {
     window.addEventListener("resize", setCellSize);
 });
 
+function submitSudoku() {
+    var alerts = [];
+
+    // Add any alerts to the array
+    if (isIncomplete()) alerts.push("Incomplete");
+    if (isInvalid()) alerts.push("Invalid");
+
+    // Display any alerts
+    if (alerts.length === 1)  createAlert("danger", alerts[0]);
+    else if (alerts.length > 1) createAlert("danger", alerts.join("<br>"));
+
+    else {
+        // Submit Sudoku
+    }
+}
+
 function solveSudoku() {
-    $.ajax({
-        url: "/Home/SolveSudoku",
-        type: "POST",
-        data: {
-            "sudoku": getGrid()
-        },
-        success: function(result) {
-            $("#body").html(result);
-        },
-        error: function(error) {
-            console.log(error);
-        }
-    });
+    var alerts = [];
+
+    // Add any alerts to the array
+    if (isInvalid()) alerts.push("Invalid");
+
+    // Display any alerts
+    if (alerts.length === 1) createAlert("danger", alerts[0]);
+    else if (alerts.length > 1) createAlert("danger", alerts.join("<br>"));
+
+    else {
+        $.ajax({
+            url: "/Home/SolveSudoku",
+            type: "POST",
+            data: {
+                "sudoku": getGrid()
+            },
+            success: function (result) {
+                $("#body").html(result);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+    
 }
 
 function getGrid() {
@@ -218,14 +246,16 @@ function invalidCellsCheck() {
         });
 
         // Check whether the cell is invalid
-        $(".cell").each(function () {
-            invalid = this !== cell &&
-                $(this).text() === $(cell).text() &&
-                ($(this).data("region") === $(cell).data("region") ||
-                    $(this).data("x") === $(cell).data("x") ||
-                    $(this).data("y") === $(cell).data("y"));
-            return !invalid;
-        });
+        if ($(this).text() !== "") {
+            $(".cell").each(function () {
+                invalid = this !== cell &&
+                    $(this).text() === $(cell).text() &&
+                    ($(this).data("region") === $(cell).data("region") ||
+                        $(this).data("x") === $(cell).data("x") ||
+                        $(this).data("y") === $(cell).data("y"));
+                return !invalid;
+            });
+        }
 
         // Add appropriate bootstrap text class
         if (invalid) {
@@ -250,6 +280,32 @@ function undo() {
     cellHighlighting($(".selected")[0]);
     invalidCellsCheck();
     toggleButtons();
+}
+
+function isIncomplete() {
+    var incomplete = false;
+    $(".cell").each(function () {
+        if ($(this).text() === "") {
+            incomplete = true;
+            return false;
+        }
+    });
+    return incomplete;
+}
+
+function isInvalid() {
+    var invalid = false;
+    $(".cell").each(function () {
+        if ($(this).hasClass("text-danger")) {
+            invalid = true;
+            return false;
+        }
+    });
+    return invalid;
+}
+
+function createAlert(type, message) {
+    $("#alertContainer").html("<div class='alert alert-dismissible alert-" + type + "'><a href='#' class='close' data-dismiss='alert'>&times;</a>" + message + "</div>");
 }
 
 function startTimer() {
