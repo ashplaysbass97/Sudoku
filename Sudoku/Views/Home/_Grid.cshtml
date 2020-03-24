@@ -1,4 +1,4 @@
-﻿<div class="board">
+﻿<div class="board" data-solved="@(Model?.Solved ?? "False")">
     @{
         int gridSize = Model?.Size ?? 9;
         int regionWidth = Model?.RegionWidth ?? 3;
@@ -8,7 +8,7 @@
         {
             @for (int x = 0; x < gridSize; x++)
             {
-                bool editable = Model?.Cells[x + y * gridSize].Value == null;
+                bool editable = Model?.Cells[x + y * gridSize].Editable == true;
                 string classes = "cell";
 
                 // Whether the cell is at the top or bottom of a region

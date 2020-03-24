@@ -33,5 +33,11 @@ namespace Sudoku.Controllers
             Grid = _sudokuService.SolveSudoku(Grid, sudoku);
             return PartialView("SolveSudoku", Grid);
         }
+
+        public IActionResult SubmitSolution(int?[] sudoku)
+        {
+            Grid = _sudokuService.SubmitSolution(Grid, sudoku);
+            return PartialView("GenerateSudoku", Grid);
+        }
     }
 }

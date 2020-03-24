@@ -49,7 +49,8 @@ namespace Sudoku.ServiceLayer
                     Cell cell = new Cell
                     {
                         Coordinates = new Point(x, y),
-                        Region = new Point(x / regionSize[0], y / regionSize[1])
+                        Region = new Point(x / regionSize[0], y / regionSize[1]),
+                        Editable = true
                     };
                     cells.Add(cell);
                 }
@@ -115,6 +116,7 @@ namespace Sudoku.ServiceLayer
             foreach (Cell cell in _grid.Cells)
             {
                 cell.Solution = cell.Value ?? 0;
+                cell.Editable = false;
             }
 
             Random random = new Random();
@@ -125,7 +127,8 @@ namespace Sudoku.ServiceLayer
                     Coordinates = cell.Coordinates,
                     Region = cell.Region,
                     Value = cell.Value,
-                    Solution = cell.Solution
+                    Solution = cell.Solution,
+                    Editable = cell.Editable
                 });
 
                 _steps = 1;
@@ -148,6 +151,7 @@ namespace Sudoku.ServiceLayer
                 {
                     _grid.Cells = tmp;
                     _grid.Cells[i].Value = null;
+                    _grid.Cells[i].Editable = true;
                     removedCellsCount++;
                 }
                 else
@@ -158,7 +162,7 @@ namespace Sudoku.ServiceLayer
                 if (_steps >= MaximumSteps || removedCellsCount >= _difficultySettings[_grid.Size][difficulty]) break;
             }
 
-            return grid;
+            return _grid;
         }
 
         public Grid SolveSudoku(Grid grid, int?[] sudoku)
@@ -171,7 +175,8 @@ namespace Sudoku.ServiceLayer
 
             for (int i = 0; i < sudoku.Length; i++)
             {
-                _grid.Cells[i].Value = sudoku[i];
+                _grid.Cells[i].Solution = _grid.Cells[i].Value = sudoku[i];
+                _grid.Cells[i].Editable = sudoku[i] != null;
             }
 
             for (int i = 0; i <= _grid.Size; i++)
@@ -186,7 +191,26 @@ namespace Sudoku.ServiceLayer
             _steps = 1;
             _grid.Solved = BacktrackingAlgorithm(NextCell(), false);
 
+            if (_grid.Solved == false)
+            {
+                for (int i = 0; i < sudoku.Length; i++)
+                {
+                    _grid.Cells[i].Editable = true;
+                }
+            }
+
             return _grid;
+        }
+
+        public Grid SubmitSolution(Grid grid, int?[] sudoku)
+        {
+            grid.Solved = true;
+            for (int i = 0; i < grid.Cells.Count; i++)
+            {
+                grid.Cells[i].Value = sudoku[i];
+                if (grid.Cells[i].Solution != sudoku[i]) grid.Solved = false;
+            }
+            return grid;
         }
 
         private void InitializeConstraints()
