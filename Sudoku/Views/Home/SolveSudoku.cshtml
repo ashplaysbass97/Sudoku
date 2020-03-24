@@ -1,0 +1,31 @@
+﻿@model Sudoku.Models.Grid
+
+@{
+    ViewData["Title"] = "Index";
+    if (Model == null)
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-8" id="timer">
+            <partial name="_Timer" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8" id="grid">
+            <partial name="_Grid" />
+        </div>
+        <div class="col-lg-4" id="buttons">
+            <partial name="_Buttons" />
+            <div id="alertContainer">
+                <div class="alert alert-dismissible alert-@(Model.Solved ? "success" : "danger")">
+                    <a href='#' class='close' data-dismiss='alert'>&times;</a>
+                    @(Model.Solved ? "Solved" : "Unsolved")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

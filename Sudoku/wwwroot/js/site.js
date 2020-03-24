@@ -95,6 +95,7 @@ function solveSudoku() {
             },
             success: function (result) {
                 $("#body").html(result);
+                setCellSize();
             },
             error: function (error) {
                 console.log(error);
@@ -105,26 +106,19 @@ function solveSudoku() {
 }
 
 function getGrid() {
-    var cells = $("#grid :input");
-    var size = cells.length;
-
-    var grid = new Array(size);
-    for (var i = 0; i < size; i++) {
-        grid[i] = cells[i].value;
-    }
+    var grid = [];
+    $(".cell").each(function() {
+        grid.push($(this).text());
+    });
     return grid;
 }
 
 function setCellSize() {
-    window.requestAnimationFrame(() => {
-        var width = document.querySelector(".cell").clientWidth;
-        document.querySelectorAll(".cell").forEach((tile) => {
-            if (tile.clientHeight !== width) {
-                tile.style.height = width + "px";
-                tile.style.fontSize = width * 0.75 + "px";
-                tile.style.lineHeight = width + "px";
-            }
-        });
+    var width = $(".cell").width();
+    $(".cell").each(function () {
+        $(this).css("height", width + "px");
+        $(this).css("font-size", width * 0.75 + "px");
+        $(this).css("line-height", width + "px");
     });
 };
 

@@ -184,8 +184,7 @@ namespace Sudoku.ServiceLayer
             PopulateCandidates();
 
             _steps = 1;
-            BacktrackingAlgorithm(NextCell(), false);
-            _grid.Cells = _solutions[0];
+            _grid.Solved = BacktrackingAlgorithm(NextCell(), false);
 
             return _grid;
         }

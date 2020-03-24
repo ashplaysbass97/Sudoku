@@ -9,5 +9,6 @@ namespace Sudoku.Models
         public int RegionWidth { get; set; }
         public int RegionHeight { get; set; }
         public List<Cell> Cells { get; set; }
+        public bool Solved { get; set; }
     }
 }

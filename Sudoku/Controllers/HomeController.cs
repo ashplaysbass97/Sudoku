@@ -15,7 +15,7 @@ namespace Sudoku.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View("NewSudoku");
         }
 
         public IActionResult NewSudoku(string difficulty, int size, string mode)
@@ -25,13 +25,13 @@ namespace Sudoku.Controllers
             {
                 Grid = _sudokuService.GenerateSudoku(Grid, difficulty);
             }
-            return PartialView("Index", Grid);
+            return PartialView("NewSudoku", Grid);
         }
 
         public IActionResult SolveSudoku(int?[] sudoku)
         {
             Grid = _sudokuService.SolveSudoku(Grid, sudoku);
-            return PartialView("Index", Grid);
+            return PartialView("SolveSudoku", Grid);
         }
     }
 }
