@@ -1,10 +1,10 @@
 ﻿var mode;
 var selectedCell;
 var undoStack = new Array();
-var seconds = 0, minutes = 0;
 var timer;
+var seconds = 0, minutes = 0;
 
-$(function() {
+$(function () {
     var slider = $("#slider");
     var size = $("#size");
     var sizes = [4, 6, 8, 9, 10, 12, 14, 15, 16];
@@ -15,17 +15,13 @@ $(function() {
     size.text("Size: 9x9");
 
     // Update the size label when the slider changes
-    slider.on("input", function() {
-        size.text("Size: " + sizes[this.value] + "x" + sizes[this.value]);
-    });
+    slider.on("input", () => size.text("Size: " + sizes[this.value] + "x" + sizes[this.value]));
 
     // Enable or disable the difficulty select depending on the selected mode
-    $("input[name='mode']").click(function() {
-        $("#difficulty").prop("disabled", $(this).val() === "solve" ? true : false);
-    });
+    $("input[name='mode']").click(() => $("#difficulty").prop("disabled", $(this).val() === "solve" ? true : false));
 
     // New Sudoku button event listener
-    $("#newSudoku").submit(function(e) {
+    $("#newSudoku").submit(function (e) {
         e.preventDefault();
         mode = $("input[name='mode']:checked").val();
         $.ajax({
@@ -36,23 +32,25 @@ $(function() {
                 "size": size.text().substring(5, size.text().length).split("x")[0],
                 "mode": mode
             },
-            success: function(result) {
-                $("#body").html(result);
+            success: function (result) {
+                // Reset variables
+                selectedCell = null;
                 undoStack = new Array();
                 resetTimer();
-                if (mode === "generate") startTimer();
+
+                // Load Sudoku
+                $("#body").html(result);
                 setCellSize();
                 addEventListeners();
                 updateButtons();
+                if (mode === "generate") startTimer();
             },
-            error: function() {
+            error: function () {
                 alert("error");
             }
         });
     });
-
     setCellSize();
-    window.addEventListener("resize", setCellSize);
 });
 
 function submitSudoku() {
@@ -63,7 +61,7 @@ function submitSudoku() {
     if (isInvalid()) alerts.push("Invalid");
 
     // Display any alerts
-    if (alerts.length === 1)  createAlert("danger", alerts[0]);
+    if (alerts.length === 1) createAlert("danger", alerts[0]);
     else if (alerts.length > 1) createAlert("danger", alerts.join("<br>"));
 
     else {
@@ -114,7 +112,6 @@ function solveSudoku() {
             }
         });
     }
-    
 }
 
 function setCellSize() {
@@ -128,25 +125,28 @@ function setCellSize() {
 
 function addEventListeners() {
     // Add event listeners for the cells
-    $(".cell").each(function() {
+    window.addEventListener("resize", setCellSize);
+    $(".cell").each(function () {
         $(this).on({
-            mouseenter: function() {
+            mouseenter: function () {
                 if (!$(this).hasClass("selected")) {
                     if ($(this).hasClass("invalid")) $(this).css("background-color", "#ffb4a9");
                     else if ($(this).hasClass("highlighted")) $(this).css("background-color", "#bbb");
                     else $(this).css("background-color", "#e1e1e1");
                 }
             },
-            mouseleave: function() {
-                $(this).css("background-color", "");
-            },
-            click: function() {
+            mouseleave: () => $(this).css("background-color", ""),
+            click: function () {
                 selectedCell = this;
                 highlightCells();
                 updateButtons();
             }
         });
     });
+
+    // Add event listeners for the timer
+    $("#playButton").click(() => startTimer());
+    $("#pauseButton").click(() => pauseTimer());
 
     // Add event listeners for the keypad
     $("[id^='keypadButton']").each(function () {
@@ -156,40 +156,31 @@ function addEventListeners() {
         });
     });
 
-    // Add an event listener for the hint button
-    $("#hintButton").click(function() {
-        updateCell($(selectedCell).data("solution"));
-    });
-
-    // Add an event listener for the undo button
-    $("#undoButton").click(function() {
-        undo();
-    });
-
-    // Add an event listener for the erase button
-    $("#eraseButton").click(function() {
-        updateCell("");
-    });
-
-    $("#submitButton").attr("onclick", mode === "generate" ? "submitSudoku()" : "solveSudoku()");
+    // Add event listeners for the hint, undo, erase, and submit buttons
+    $("#hintButton").click(() => updateCell($(selectedCell).data("solution")));
+    $("#undoButton").click(() => undo());
+    $("#eraseButton").click(() => updateCell(""));
+    $("#submitButton").click(() => mode === "generate" ? submitSudoku() : solveSudoku());
 }
 
-function updateCell(value) {
-    if ($(selectedCell).data("editable") === "True") {
-        undoStack.push([$(selectedCell).data("x"), $(selectedCell).data("y"), $(selectedCell).text()]);
-        $(selectedCell).text(value);
-        highlightCells();
-        identifyInvalidCells();
-        updateButtons();
-    }
-}
+function updateButtons() {
+    var editable = $(selectedCell).data("editable") === "True";
 
-function undo() {
-    var lastAction = undoStack.pop();
-    $('.cell[data-x="' + lastAction[0] + '"][data-y="' + lastAction[1] + '"]').text(lastAction[2]);
-    highlightCells();
-    identifyInvalidCells();
-    updateButtons();
+    // Highlight the corresponding key for the selected cell
+    $("[id^='keypadButton']").each(function () {
+        if ($(selectedCell).text() === $(this).text()) $(this).addClass("focus");
+        else $(this).removeClass("focus");
+    });
+
+    // Leave buttons disabled if the Sudoku has been solved
+    if ($(".board").data("solved") === "True") return;
+
+    // Enable or disable buttons appropriately
+    $("[id^='keypadButton']").attr("disabled", !editable);
+    $("#hintButton").attr("disabled", mode === "solve" || !editable);
+    $("#eraseButton").attr("disabled", !editable || $(selectedCell).text() === "");
+    $("#undoButton").attr("disabled", undoStack.length === 0);
+    $("#submitButton").attr("disabled", false);
 }
 
 function highlightCells() {
@@ -199,7 +190,7 @@ function highlightCells() {
 
     // Check whether the region, column, or row of the selected cell is invalid
     if ($(selectedCell).text() !== "") {
-        $(".cell").each(function() {
+        $(".cell").each(function () {
             if (this === selectedCell || $(this).text() !== $(selectedCell).text()) return true;
             if ($(this).data("region") === $(selectedCell).data("region")) invalidRegion = true;
             else if ($(this).data("x") === $(selectedCell).data("x")) invalidColumn = true;
@@ -207,7 +198,7 @@ function highlightCells() {
         });
     }
 
-    $(".cell").each(function() {
+    $(".cell").each(function () {
         // Remove existing background-color classes
         $(this).css("background-color", "");
         $(this).removeClass("highlighted selected invalid");
@@ -218,7 +209,7 @@ function highlightCells() {
             if ($(selectedCell).text() === "") return true;
             if (invalidRegion || invalidColumn || invalidRow) $(this).addClass("invalid");
 
-        // Add appropriate classes to cells in the same region, column, or row as the selected cell
+            // Add appropriate classes to cells in the same region, column, or row as the selected cell
         } else if ($(this).data("region") === $(selectedCell).data("region") ||
             $(this).data("x") === $(selectedCell).data("x") ||
             $(this).data("y") === $(selectedCell).data("y")) {
@@ -233,14 +224,24 @@ function highlightCells() {
     });
 }
 
+function updateCell(value) {
+    if ($(selectedCell).data("editable") === "True") {
+        undoStack.push([$(selectedCell).data("x"), $(selectedCell).data("y"), $(selectedCell).text()]);
+        $(selectedCell).text(value);
+        highlightCells();
+        identifyInvalidCells();
+        updateButtons();
+    }
+}
+
 function identifyInvalidCells() {
-    $(".cell").each(function() {
+    $(".cell").each(function () {
         var cell = this;
         var editable = $(cell).data("editable") === "True";
         var invalid = false;
 
         // Remove existing bootstrap text classes
-        $(cell).removeClass(function(index, className) {
+        $(cell).removeClass(function (index, className) {
             return (className.match(/(^|\s)text-\S+/g) || []).join(" ");
         });
 
@@ -262,24 +263,12 @@ function identifyInvalidCells() {
     });
 }
 
-function updateButtons() {
-    var editable = $(selectedCell).data("editable") === "True";
-
-    // Highlight the corresponding key for the selected cell
-    $("[id^='keypadButton']").each(function () {
-        if ($(selectedCell).text() === $(this).text()) $(this).addClass("focus");
-        else $(this).removeClass("focus");
-    });
-
-    // Leave buttons disabled if the Sudoku has been solved
-    if ($(".board").data("solved") === "True") return;
-
-    // Enable or disable buttons appropriately
-    $("[id^='keypadButton']").attr("disabled", !editable);
-    $("#hintButton").attr("disabled", mode === "solve" || !editable);
-    $("#eraseButton").attr("disabled", !editable || $(selectedCell).text() === "");
-    $("#undoButton").attr("disabled", undoStack.length === 0);
-    $("#submitButton").attr("disabled", false);
+function undo() {
+    var lastAction = undoStack.pop();
+    $('.cell[data-x="' + lastAction[0] + '"][data-y="' + lastAction[1] + '"]').text(lastAction[2]);
+    highlightCells();
+    identifyInvalidCells();
+    updateButtons();
 }
 
 function isIncomplete() {
@@ -341,7 +330,7 @@ function pauseTimer() {
 }
 
 function resetTimer() {
+    pauseTimer();
     seconds = 0;
     minutes = 0;
-    pauseTimer();
 }
