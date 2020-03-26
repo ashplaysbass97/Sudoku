@@ -38,12 +38,12 @@ $(function() {
             },
             success: function(result) {
                 $("#body").html(result);
-                resetTimer();
                 undoStack = new Array();
+                resetTimer();
+                if (mode === "generate") startTimer();
                 setCellSize();
                 addEventListeners();
                 updateButtons();
-                if (mode === "generate") startTimer();
             },
             error: function() {
                 alert("error");
@@ -157,12 +157,12 @@ function addEventListeners() {
     });
 
     // Add an event listener for the hint button
-    $("#hintButton").click(function () {
+    $("#hintButton").click(function() {
         updateCell($(selectedCell).data("solution"));
     });
 
     // Add an event listener for the undo button
-    $("#undoButton").click(function () {
+    $("#undoButton").click(function() {
         undo();
     });
 
@@ -276,7 +276,6 @@ function updateButtons() {
 
     // Enable or disable buttons appropriately
     $("[id^='keypadButton']").attr("disabled", !editable);
-    $("#notesButton").attr("disabled", mode === "solve");
     $("#hintButton").attr("disabled", mode === "solve" || !editable);
     $("#eraseButton").attr("disabled", !editable || $(selectedCell).text() === "");
     $("#undoButton").attr("disabled", undoStack.length === 0);
@@ -344,4 +343,5 @@ function pauseTimer() {
 function resetTimer() {
     seconds = 0;
     minutes = 0;
+    pauseTimer();
 }

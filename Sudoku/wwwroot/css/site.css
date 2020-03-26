@@ -67,7 +67,7 @@
 
 #buttons .container .row:nth-last-child(1),
 #buttons .container .row:nth-last-child(3),
-#buttons .container .row:nth-last-child(6) {
+#buttons .container .row:nth-last-child(7) {
     padding-bottom: 0;
 }
 
@@ -83,6 +83,6 @@
     cursor: pointer;
 }
 
-#alertContainer {
-    padding: 15px;
+.alert {
+    margin: 15px;
 }
