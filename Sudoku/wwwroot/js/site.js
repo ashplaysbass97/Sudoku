@@ -1,8 +1,11 @@
-﻿var mode;
+﻿var difficulty;
+var mode;
 var selectedCell;
 var undoStack = new Array();
 var timer;
 var seconds = 0, minutes = 0;
+var moves = 0;
+var hints = 0;
 
 $(function () {
     var slider = $("#slider");
@@ -15,20 +18,25 @@ $(function () {
     size.text("Size: 9x9");
 
     // Update the size label when the slider changes
-    slider.on("input", () => size.text("Size: " + sizes[this.value] + "x" + sizes[this.value]));
+    slider.on("input", function() {
+        size.text("Size: " + sizes[this.value] + "x" + sizes[this.value]);
+    });
 
     // Enable or disable the difficulty select depending on the selected mode
-    $("input[name='mode']").click(() => $("#difficulty").prop("disabled", $(this).val() === "solve" ? true : false));
+    $("input[name='mode']").click(function() {
+        $("#difficulty").prop("disabled", $(this).val() === "solve" ? true : false);
+    });
 
     // New Sudoku button event listener
     $("#newSudoku").submit(function (e) {
         e.preventDefault();
+        difficulty = $("#difficulty").val();
         mode = $("input[name='mode']:checked").val();
         $.ajax({
             url: "/Home/NewSudoku",
             type: "POST",
             data: {
-                "difficulty": $("#difficulty").val(),
+                "difficulty": difficulty,
                 "size": size.text().substring(5, size.text().length).split("x")[0],
                 "mode": mode
             },
@@ -37,6 +45,8 @@ $(function () {
                 selectedCell = null;
                 undoStack = new Array();
                 resetTimer();
+                moves = 0;
+                hints = 0;
 
                 // Load Sudoku
                 $("#body").html(result);
@@ -73,6 +83,18 @@ function submitSudoku() {
             },
             success: function (result) {
                 $("#body").html(result);
+                updateTimer();
+                if ($("#alert").hasClass("alert-success")) {
+                    pauseTimer();
+                    var time = minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
+                    var size = Math.sqrt($(".cell").length);
+                    var difficultyModifier = 1;
+                    if (difficulty === "Easy") difficultyModifier = 0.5;
+                    else if (difficulty === "Hard") difficultyModifier = 2;
+                    else if (difficulty === "Expert") difficultyModifier = 4;
+                    var score = Math.pow(size, 4) - (minutes * 60 + seconds + moves * 2 + hints * 4) / difficultyModifier;
+                    $("#stats").html("<br>Time: " + time + "<br>Moves: " + moves + "<br>Hints: " + hints + "<br>Difficulty modifier: x" + difficultyModifier + "<br><b>Score: " + score + "</b>");
+                }
                 setCellSize();
                 addEventListeners();
                 updateButtons();
@@ -144,10 +166,6 @@ function addEventListeners() {
         });
     });
 
-    // Add event listeners for the timer
-    $("#playButton").click(() => startTimer());
-    $("#pauseButton").click(() => pauseTimer());
-
     // Add event listeners for the keypad
     $("[id^='keypadButton']").each(function () {
         $(this).click(function () {
@@ -157,7 +175,10 @@ function addEventListeners() {
     });
 
     // Add event listeners for the hint, undo, erase, and submit buttons
-    $("#hintButton").click(() => updateCell($(selectedCell).data("solution")));
+    $("#hintButton").click(function() {
+        updateCell($(selectedCell).data("solution"));
+        hints++;
+    });
     $("#undoButton").click(() => undo());
     $("#eraseButton").click(() => updateCell(""));
     $("#submitButton").click(() => mode === "generate" ? submitSudoku() : solveSudoku());
@@ -228,6 +249,7 @@ function updateCell(value) {
     if ($(selectedCell).data("editable") === "True") {
         undoStack.push([$(selectedCell).data("x"), $(selectedCell).data("y"), $(selectedCell).text()]);
         $(selectedCell).text(value);
+        moves++;
         highlightCells();
         identifyInvalidCells();
         updateButtons();
@@ -266,6 +288,7 @@ function identifyInvalidCells() {
 function undo() {
     var lastAction = undoStack.pop();
     $('.cell[data-x="' + lastAction[0] + '"][data-y="' + lastAction[1] + '"]').text(lastAction[2]);
+    moves++;
     highlightCells();
     identifyInvalidCells();
     updateButtons();
