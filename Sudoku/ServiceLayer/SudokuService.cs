@@ -26,15 +26,15 @@ namespace Sudoku.ServiceLayer
         private const int MaximumSteps = 10000;
         private readonly Dictionary<int, Dictionary<string, int>> _difficultySettings = new Dictionary<int, Dictionary<string, int>>
         {
-            {4, new Dictionary<string, int>{{"Easy", 9}, {"Medium", 10}, {"Hard", 11}, {"Expert", 12}}},
-            {6, new Dictionary<string, int>{{"Easy", 21}, {"Medium", 23}, {"Hard", 25}, {"Expert", 27}}},
-            {8, new Dictionary<string, int>{{"Easy", 36}, {"Medium", 40}, {"Hard", 44}, {"Expert", 48}}},
-            {9, new Dictionary<string, int>{{"Easy", 42}, {"Medium", 48}, {"Hard", 54}, {"Expert", 60}}},
-            {10, new Dictionary<string, int>{{"Easy", 50}, {"Medium", 57}, {"Hard", 64}, {"Expert", 71}}},
-            {12, new Dictionary<string, int>{{"Easy", 71}, {"Medium", 80}, {"Hard", 89}, {"Expert", 98}}},
-            {14, new Dictionary<string, int>{{"Easy", 84}, {"Medium", 95}, {"Hard", 106}, {"Expert", 117}}},
-            {15, new Dictionary<string, int>{{"Easy", 94}, {"Medium", 107}, {"Hard", 120}, {"Expert", 133}}},
-            {16, new Dictionary<string, int>{{"Easy", 106}, {"Medium", 121}, {"Hard", 136}, {"Expert", 151}}}
+            {4, new Dictionary<string, int>{{"Easy", 6}, {"Medium", 8}, {"Hard", 10}, {"Expert", 12}}},
+            {6, new Dictionary<string, int>{{"Easy", 15}, {"Medium", 19}, {"Hard", 23}, {"Expert", 27}}},
+            {8, new Dictionary<string, int>{{"Easy", 30}, {"Medium", 36}, {"Hard", 42}, {"Expert", 48}}},
+            {9, new Dictionary<string, int>{{"Easy", 33}, {"Medium", 42}, {"Hard", 51}, {"Expert", 60}}},
+            {10, new Dictionary<string, int>{{"Easy", 41}, {"Medium", 51}, {"Hard", 61}, {"Expert", 71}}},
+            {12, new Dictionary<string, int>{{"Easy", 62}, {"Medium", 74}, {"Hard", 86}, {"Expert", 98}}},
+            {14, new Dictionary<string, int>{{"Easy", 75}, {"Medium", 89}, {"Hard", 103}, {"Expert", 117}}},
+            {15, new Dictionary<string, int>{{"Easy", 88}, {"Medium", 103}, {"Hard", 118}, {"Expert", 133}}},
+            {16, new Dictionary<string, int>{{"Easy", 103}, {"Medium", 119}, {"Hard", 135}, {"Expert", 151}}}
         };
 
         public Grid SetupGrid(int size, string mode)
