@@ -53,7 +53,9 @@ $(function () {
                 setCellSize();
                 addEventListeners();
                 updateButtons();
-                if (mode === "generate") startTimer();
+                $("#playButton").removeClass("disabled");
+                if (mode === "solve") $("#playButton").addClass("disabled");
+                else startTimer();
             },
             error: function () {
                 alert("error");
@@ -85,6 +87,7 @@ function submitSudoku() {
                 $("#body").html(result);
                 updateTimer();
                 if ($("#alert").hasClass("alert-success")) {
+                    $("#playButton").addClass("disabled");
                     pauseTimer();
                     var time = minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
                     var size = Math.sqrt($(".cell").length);
@@ -197,11 +200,11 @@ function updateButtons() {
     if ($(".board").data("solved") === "True") return;
 
     // Enable or disable buttons appropriately
-    $("[id^='keypadButton']").attr("disabled", !editable);
-    $("#hintButton").attr("disabled", mode === "solve" || !editable);
-    $("#eraseButton").attr("disabled", !editable || $(selectedCell).text() === "");
-    $("#undoButton").attr("disabled", undoStack.length === 0);
-    $("#submitButton").attr("disabled", false);
+    $("[id^='keypadButton']").prop("disabled", !editable);
+    $("#hintButton").prop("disabled", mode === "solve" || !editable);
+    $("#eraseButton").prop("disabled", !editable || $(selectedCell).text() === "");
+    $("#undoButton").prop("disabled", undoStack.length === 0);
+    $("#submitButton").prop("disabled", false);
 }
 
 function highlightCells() {
@@ -329,11 +332,11 @@ function createAlert(type, message) {
 }
 
 function startTimer() {
-    if (!timer) {
-        timer = setInterval(updateTimer, 1000);
+    if (!$("#playButton").hasClass("disabled")) {
+        if (!timer) timer = setInterval(updateTimer, 1000);
+        $("#playButton").attr("hidden", true);
+        $("#pauseButton").removeAttr("hidden");
     }
-    $("#playButton").attr("hidden", true);
-    $("#pauseButton").removeAttr("hidden");
 }
 
 function updateTimer() {

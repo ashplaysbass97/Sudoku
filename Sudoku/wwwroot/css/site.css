@@ -8,9 +8,14 @@
 
 #timerButton {
     text-align: right;
+    color: #158CBA;
 }
 
-#playButton, #pauseButton {
+#playButton.disabled {
+    color: #68b5d2;
+}
+
+#playButton:not(.disabled), #pauseButton:not(.disabled) {
     cursor: pointer;
 }
 
@@ -71,6 +76,10 @@
 
 .selected.invalid {
     background-color: #ffb4a9;
+}
+
+.btn:disabled {
+    cursor: default;
 }
 
 #buttons .container .row {
