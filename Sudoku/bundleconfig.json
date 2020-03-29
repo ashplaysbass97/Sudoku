@@ -10,5 +10,35 @@
     "inputFiles": [
       "wwwroot/js/site.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/css/bootstrap.lumen.min.css",
+    "inputFiles": [
+      "wwwroot/lib/css/bootstrap.lumen.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/css/fontawesome.min.css",
+    "inputFiles": [
+      "wwwroot/lib/css/fontawesome.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/js/bootstrap.bundle.min.js",
+    "inputFiles": [
+      "wwwroot/lib/js/bootstrap.bundle.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/js/fontawesome.min.js",
+    "inputFiles": [
+      "wwwroot/lib/js/fontawesome.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/js/jquery.min.js",
+    "inputFiles": [
+      "wwwroot/lib/js/jquery.js"
+    ]
   }
 ]
