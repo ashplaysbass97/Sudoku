@@ -2,6 +2,7 @@
 var mode;
 var selectedCell;
 var undoStack = new Array();
+var hiddenCells = new Array();
 var timer;
 var seconds = 0, minutes = 0;
 var moves = 0;
@@ -88,7 +89,7 @@ function submitSudoku() {
                 updateTimer();
                 if ($("#alert").hasClass("alert-success")) {
                     $("#playButton").addClass("disabled");
-                    pauseTimer();
+                    stopTimer();
                     var time = minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
                     var size = Math.sqrt($(".cell").length);
                     var difficultyModifier = 1;
@@ -185,6 +186,14 @@ function addEventListeners() {
     $("#undoButton").click(() => undo());
     $("#eraseButton").click(() => updateCell(""));
     $("#submitButton").click(() => mode === "generate" ? submitSudoku() : solveSudoku());
+
+    // Resume timer and add cell values when the pause modal is closed
+    $("#pauseModal").on("hidden.bs.modal", function () {
+        $(".cell").each(function () {
+            $(this).text(hiddenCells.shift());
+        });
+        startTimer();
+    });
 }
 
 function updateButtons() {
@@ -349,6 +358,18 @@ function updateTimer() {
 }
 
 function pauseTimer() {
+    stopTimer();
+    selectedCell = null;
+    highlightCells();
+    updateButtons();
+    $(".cell").each(function() {
+        hiddenCells.push($(this).text());
+        $(this).text("");
+    });
+    $("#pauseModal").modal("show");
+}
+
+function stopTimer() {
     clearInterval(timer);
     timer = false;
     $("#pauseButton").attr("hidden", true);
@@ -356,7 +377,7 @@ function pauseTimer() {
 }
 
 function resetTimer() {
-    pauseTimer();
+    stopTimer();
     seconds = 0;
     minutes = 0;
 }
