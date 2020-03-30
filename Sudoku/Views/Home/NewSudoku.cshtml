@@ -10,16 +10,16 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-8" id="timer">
+        <div class="col-lg-8" id="left">
             <partial name="_Timer" />
+            <div id="grid">
+                <partial name="_Grid" />
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-8" id="grid">
-            <partial name="_Grid" />
-        </div>
-        <div class="col-lg-4" id="buttons">
-            <partial name="_Buttons" />
+        <div class="col-lg-4" id="right">
+            <div id="buttons">
+                <partial name="_Buttons" />
+            </div>
             <div id="alertContainer"></div>
         </div>
     </div>

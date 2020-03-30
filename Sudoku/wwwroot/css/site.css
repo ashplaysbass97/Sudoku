@@ -2,6 +2,19 @@
     visibility: hidden;
 }
 
+.navbar {
+    margin-bottom: 8px;
+}
+
+#newSudoku {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.container {
+    padding: 0;
+}
+
 .form-group, .btn-group {
     padding-right: 1rem;
 }
@@ -101,5 +114,9 @@
 }
 
 .alert {
-    margin: 15px;
+    margin-top: 15px;
+}
+
+#right {
+    margin-top: 32px;
 }
