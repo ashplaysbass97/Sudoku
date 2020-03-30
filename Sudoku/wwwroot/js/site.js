@@ -64,6 +64,7 @@ $(function () {
         });
     });
     setCellSize();
+    $("body").css("visibility", "visible");
 });
 
 function submitSudoku() {

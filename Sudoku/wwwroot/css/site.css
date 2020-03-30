@@ -1,4 +1,8 @@
-﻿.form-group, .btn-group {
+﻿body {
+    visibility: hidden;
+}
+
+.form-group, .btn-group {
     padding-right: 1rem;
 }
 
@@ -13,6 +17,10 @@
 
 #playButton.disabled {
     color: #68b5d2;
+}
+
+#pauseButton:hover {
+    color: #117298;
 }
 
 #playButton:not(.disabled), #pauseButton:not(.disabled) {
