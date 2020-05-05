@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Sudoku.Models;
+﻿using Sudoku.Models;
 
 namespace Sudoku.ServiceLayer
 {

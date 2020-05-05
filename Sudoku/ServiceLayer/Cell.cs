@@ -15,7 +15,8 @@ namespace Sudoku.ServiceLayer
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Coordinates.Equals(other.Coordinates) && Region.Equals(other.Region) && Value == other.Value && Solution == other.Solution && Editable == other.Editable;
+            return Coordinates.Equals(other.Coordinates) && Region.Equals(other.Region) && Value == other.Value &&
+                   Solution == other.Solution && Editable == other.Editable;
         }
 
         public override bool Equals(object obj)

@@ -2,10 +2,10 @@
     @{
         int regionWidth = Model?.RegionWidth ?? 3;
         int regionHeight = Model?.RegionHeight ?? 3;
-        for (int i = 0; i < regionWidth; i++)
+        for (var i = 0; i < regionWidth; i++)
         {
             <div class="row">
-                @for (int j = 1; j <= regionHeight; j++)
+                @for (var j = 1; j <= regionHeight; j++)
                 {
                     <div class="col">
                         <button type="button" class="btn btn-secondary btn-lg btn-block" id="keypadButton@(i * regionHeight + j)" disabled>@(i * regionHeight + j)</button>
@@ -14,7 +14,7 @@
             </div>
         }
     }
-    <hr />
+    <hr/>
     <div class="row">
         <div class="col">
             <button type="button" class="btn btn-secondary btn-lg btn-block" id="hintButton" disabled>Hint</button>
@@ -30,7 +30,7 @@
             <button type="button" class="btn btn-secondary btn-lg btn-block" id="eraseButton" disabled>Erase</button>
         </div>
     </div>
-    <hr />
+    <hr/>
     <div class="row">
         <div class="col">
             <button type="button" class="btn btn-success btn-lg btn-block" id="submitButton" disabled>Submit</button>

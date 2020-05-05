@@ -4,12 +4,12 @@
         int regionWidth = Model?.RegionWidth ?? 3;
         int regionHeight = Model?.RegionHeight ?? 3;
 
-        for (int y = 0; y < gridSize; y++)
+        for (var y = 0; y < gridSize; y++)
         {
-            @for (int x = 0; x < gridSize; x++)
+            @for (var x = 0; x < gridSize; x++)
             {
                 bool editable = Model?.Cells[x + y * gridSize].Editable == true;
-                string classes = "cell";
+                var classes = "cell";
 
                 // Whether the cell is at the top or bottom of a region
                 if (y % regionHeight == 0)
@@ -36,7 +36,7 @@
                     classes += " text-primary";
                 }
 
-                <div class="@classes" data-x="@x" data-y="@y" data-region="@(x / regionWidth),@(y / regionHeight)" data-editable="@editable" data-solution="@Model?.Cells[x + y * gridSize].Solution" style="flex-basis: calc(100% / @gridSize); cursor: @(editable ? "text" : "default")">@Model?.Cells[x + y * gridSize].Value</div>
+                <div class="@classes" data-x="@x" data-y="@y" data-region="@(x / regionWidth),@(y / regionHeight)" data-editable="@editable" data-solution="@Model?.Cells[x + y * gridSize].Solution" style="cursor: @(editable ? "text" : "default"); flex-basis: calc(100% / @gridSize);">@Model?.Cells[x + y * gridSize].Value</div>
             }
         }
     }

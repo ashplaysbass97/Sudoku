@@ -7,6 +7,7 @@ namespace Sudoku.Controllers
     public class HomeController : Controller
     {
         private readonly ISudokuService _sudokuService = new SudokuService();
+
         private Grid Grid
         {
             get => HttpContext.Session.GetObject<Grid>("Grid");
@@ -21,10 +22,7 @@ namespace Sudoku.Controllers
         public IActionResult NewSudoku(string difficulty, int size, string mode)
         {
             Grid = _sudokuService.SetupGrid(size, mode);
-            if (mode == "generate")
-            {
-                Grid = _sudokuService.GenerateSudoku(Grid, difficulty);
-            }
+            if (mode == "generate") Grid = _sudokuService.GenerateSudoku(Grid, difficulty);
             return PartialView("NewSudoku", Grid);
         }
 

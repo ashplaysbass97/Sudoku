@@ -11,19 +11,16 @@ namespace Sudoku.ServiceLayer
         private readonly int _gridSize;
         private readonly bool[] _values;
 
-        public int Count { get; private set; }
-
         public Candidate(int gridSize, bool initialValue)
         {
             _gridSize = gridSize;
             _values = new bool[gridSize];
             Count = 0;
 
-            for (int i = 1; i <= gridSize; i++)
-            {
-                this[i] = initialValue;
-            }
+            for (var i = 1; i <= gridSize; i++) this[i] = initialValue;
         }
+
+        public int Count { get; private set; }
 
         public bool this[int key]
         {
@@ -38,34 +35,29 @@ namespace Sudoku.ServiceLayer
             }
         }
 
-        public void SetAll(bool value)
-        {
-            for (int i = 1; i <= _gridSize; i++)
-            {
-                this[i] = value;
-            }
-        }
-
-        public override string ToString()
-        {
-            StringBuilder values = new StringBuilder();
-            foreach (int candidate in this)
-            {
-                values.Append(candidate);
-            }
-            return values.ToString();
-        }
-
         public IEnumerator GetEnumerator()
         {
             return new CandidateEnumerator(this);
         }
 
+        public void SetAll(bool value)
+        {
+            for (var i = 1; i <= _gridSize; i++) this[i] = value;
+        }
+
+        public override string ToString()
+        {
+            var values = new StringBuilder();
+            foreach (int candidate in this) values.Append(candidate);
+
+            return values.ToString();
+        }
+
         private class CandidateEnumerator : IEnumerator
         {
-            private int _position;
             private readonly Candidate _candidate;
             private readonly List<int> _randomize;
+            private int _position;
 
             public CandidateEnumerator(Candidate candidate)
             {
